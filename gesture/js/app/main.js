@@ -21,32 +21,14 @@ function onLoad() {
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.left = '0px';
 	stats.domElement.style.top = '0px';
-	document.body.appendChild( stats.domElement );
+	// document.body.appendChild( stats.domElement );
+
 	// setup canvas
 	canvas = document.getElementById('canvas');
 	context = canvas.getContext("2d");
-	context.canvas.width = window.innerWidth;
-	context.canvas.height = window.innerHeight;
-	//context.lineCap = 'round';
+	setupCanvas();
+	
 
-	// Find upscale ratio:
-	var ratio = 1;
-	if(context.webkitBackingStorePixelRatio < 2)
-	{
-		// default to 1 if property not set //
-		ratio = window.devicePixelRatio || 1;
-	};
-	//console.log(ratio);
-	// resize canvas' logical size (ensure CSS maintains original size)//
-	var w = context.canvas.width;
-	var h = context.canvas.height;
-	canvas.height = h * ratio;
-	canvas.width = w * ratio;
-	canvas.style.height = h + 'px';
-	canvas.style.width = w + 'px';
-	context.scale( ratio, ratio );
-
-	centre = new Vec2f(context.canvas.width*0.5, context.canvas.height*0.5);
 	// mouse tracking
 	isMouseDown = true;
 	mouse = new Vec2f(0,0);
@@ -55,6 +37,23 @@ function onLoad() {
 	update();
 }
 
+function setupCanvas(){
+	context.canvas.width = window.innerWidth;
+	context.canvas.height = window.innerHeight;
+	// retinize canvas
+	var ratio = 1;
+	if(context.webkitBackingStorePixelRatio < 2)
+		ratio = window.devicePixelRatio || 1;
+	var w = context.canvas.width;
+	var h = context.canvas.height;
+	canvas.height = h * ratio;
+	canvas.width = w * ratio;
+	canvas.style.height = h + 'px';
+	canvas.style.width = w + 'px';
+	context.scale( ratio, ratio );
+	canvas.width = canvas.width;
+	centre = new Vec2f(context.canvas.width*0.5, context.canvas.height*0.5);
+}
 
 // update
 
@@ -89,15 +88,15 @@ function draw() {
 			context.lineTo(points[i].x, points[i].y);
 		}
 		context.closePath();
-		context.lineWidth = 0.6;
-		context.strokeStyle = '#333333';
+		context.lineWidth = 1.0;
+		context.strokeStyle = "rgba(100, 100, 100, 0.9)";
 		context.stroke();
-		context.fillStyle = '#333333';
+		context.fillStyle = "rgba(200, 200, 200, 0.8)";
 		context.fill();
 	}
 
 	// draw centre
-	drawCircle(centre.x, centre.y, 4);
+	drawCircle(centre.x, centre.y, 2);
 
 	// smooth out dtheta
 	var dThetaAvg = 0;
@@ -116,23 +115,21 @@ function draw() {
 	context.beginPath();
 	context.moveTo(centre.x, 30);
 	context.lineTo(centre.x + (r * (context.canvas.width*0.5)), 30);
-	context.lineWidth = 30;
-	context.strokeStyle = '#3333ee';
+	context.lineWidth = 3;
+	context.strokeStyle = '#333333';
 	context.stroke();
 }
 
 function drawCircle(centerX, centerY, radius){
 	context.beginPath();
 	context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-	context.fillStyle = 'blue';
+	context.fillStyle = '#333333';
 	context.fill();
 }
 
 
 
 // Listeners
-
-
 document.addEventListener("mousedown", function(e) {
 	// isMouseDown = true;
 	// onMouseMove(e);
@@ -156,8 +153,7 @@ function onMouseMove(e) {
 }
 
 window.onresize = function() {
-	//context.canvas.width = window.innerWidth;
-	//context.canvas.height = window.innerHeight;
+	setupCanvas();
 };
 
 
