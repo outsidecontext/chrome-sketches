@@ -27,12 +27,30 @@ function onLoad() {
 	context = canvas.getContext("2d");
 	context.canvas.width = window.innerWidth;
 	context.canvas.height = window.innerHeight;
+	//context.lineCap = 'round';
+
+	// Find upscale ratio:
+	var ratio = 1;
+	if(context.webkitBackingStorePixelRatio < 2)
+	{
+		// default to 1 if property not set //
+		ratio = window.devicePixelRatio || 1;
+	};
+	//console.log(ratio);
+	// resize canvas' logical size (ensure CSS maintains original size)//
+	var w = context.canvas.width;
+	var h = context.canvas.height;
+	canvas.height = h * ratio;
+	canvas.width = w * ratio;
+	canvas.style.height = h + 'px';
+	canvas.style.width = w + 'px';
+	context.scale( ratio, ratio );
 
 	centre = new Vec2f(context.canvas.width*0.5, context.canvas.height*0.5);
 	// mouse tracking
 	isMouseDown = true;
 	mouse = new Vec2f(0,0);
-	document.addEventListener("mousemove", onMouseMove, true);
+	canvas.addEventListener("mousemove", onMouseMove, true);
 	// start update loop
 	update();
 }
@@ -60,9 +78,9 @@ function update() {
 }
 
 function draw() {
-	// clear canvas
+	// clear
 	canvas.width = canvas.width;
-	context.lineCap = 'round';
+	
 	context.beginPath();
 	var i;
 	if (points.length > 0) {
@@ -130,8 +148,8 @@ document.addEventListener("mouseup", function() {
 
 function onMouseMove(e) {
 	var rect = canvas.getBoundingClientRect();
-	mouse.x = (e.clientX - rect.left);
-	mouse.y = (e.clientY - rect.top);
+	mouse.x = e.clientX * 2;
+	mouse.y = e.clientY * 2;
 	if (points.length === 0 || mouse.x != points[0].x)
 		points.push(new Vec2f(mouse.x, mouse.y));
 	while (points.length > maxPoints) points.shift();
