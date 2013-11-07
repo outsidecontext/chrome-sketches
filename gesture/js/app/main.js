@@ -27,12 +27,7 @@ function onLoad() {
 	context = canvas.getContext("2d");
 	context.canvas.width = window.innerWidth;
 	context.canvas.height = window.innerHeight;
-	context.lineCap = 'round';
-	// if (window.devicePixelRatio == 2) {
-	// 	canvas.setAttribute('width', window.innerWidth*2);
-	// 	canvas.setAttribute('height', window.innerHeight*2);
-	// 	context.scale(.5, .5);
-	// }
+
 	centre = new Vec2f(context.canvas.width*0.5, context.canvas.height*0.5);
 	// mouse tracking
 	isMouseDown = true;
@@ -65,9 +60,9 @@ function update() {
 }
 
 function draw() {
-	// clear
+	// clear canvas
 	canvas.width = canvas.width;
-	
+	context.lineCap = 'round';
 	context.beginPath();
 	var i;
 	if (points.length > 0) {
@@ -143,8 +138,8 @@ function onMouseMove(e) {
 }
 
 window.onresize = function() {
-	context.canvas.width = window.innerWidth;
-	context.canvas.height = window.innerHeight;
+	//context.canvas.width = window.innerWidth;
+	//context.canvas.height = window.innerHeight;
 };
 
 
