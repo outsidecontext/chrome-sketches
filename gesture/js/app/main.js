@@ -2,7 +2,9 @@ var context;
 var canvas;
 var ratio = 1;
 var points = [];
-var maxPoints = 100;
+var maxPoints = 300;
+var count = 0;
+var frame = 0;
 var mouse;
 var isMouseDown;
 var centre;
@@ -12,6 +14,7 @@ var maxDThetas = 30;
 var stats = new Stats();
 var isMouseMode = false;
 var noise = new ClassicalNoise();
+var simlpex = new SimplexNoise();
 function Vec2f(x, y){
 	this.x = x; this.y = y;
 }
@@ -24,7 +27,7 @@ function onLoad() {
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.left = '0px';
 	stats.domElement.style.top = '0px';
-	// document.body.appendChild( stats.domElement );
+	document.body.appendChild( stats.domElement );
 
 	// setup canvas
 	canvas = document.getElementById('canvas');
@@ -72,8 +75,10 @@ function getRandom(min, max) {
 
 function update() {
 	requestAnimFrame(update);
+	count+=0.001;
+	frame++;
 
-	if (!isMouseMode){
+	if (!isMouseMode && frame%4===0){
 		var currentdate = new Date(); 
 		var datetime = "datetime: " + currentdate.getDate() + "/"
 		+ (currentdate.getMonth()+1)  + "/" 
@@ -86,11 +91,21 @@ function update() {
 		var secondsRatio = (currentdate.getSeconds() + (currentdate.getMilliseconds() * 0.001)) / 60;
 		//var secondsRatio = (currentdate.getSeconds()) / 60;
 		var angle = secondsRatio*360;
-		var multIn = 0.001;
-		var multOut = canvas.width;
-		var n = noise.noise(currentdate.getSeconds() * multIn, currentdate.getSeconds() * multIn, currentdate.getSeconds() * multIn) * multOut;
+		var multIn = 1;
+		var multOut = canvas.width/2;
+		// ascending blocks
+		//var n = 100 + noise.noise(currentdate.getSeconds() * multIn, currentdate.getSeconds() * currentdate.getSeconds(), currentdate.getSeconds() * multIn) * multOut;
+		// round pulses
+		//var n = noise.noise(count * multIn, angle * multIn, currentdate.getSeconds() * multIn) * multOut;
+		// sweet curves
+		var xin = count;
+		var yin = count;//currentdate.getSeconds() * 0.01;
+		var n = 100 + simlpex.noise(xin, yin) * multOut;
+
+		// force positive
 		if (n < 0) n *= -1;
-		console.log(n);
+		
+		//console.log(n);
 		var pos = getAngle(context, centre.x, centre.y, angle, n);
 		points.push(pos);
 		while (points.length > maxPoints) points.shift();
@@ -126,8 +141,8 @@ function draw() {
 			context.lineTo(centre.x, centre.y);
 			//context.closePath();
 		}
-		context.lineWidth = 1.5;
-		context.strokeStyle = "rgba(100, 100, 100, 1.0)";
+		context.lineWidth = .5;
+		context.strokeStyle = "rgba(200, 120, 100, 1.0)";
 		context.stroke();
 		//context.fillStyle = "rgba(200, 200, 200, 0.8)";
 		//context.fill();
