@@ -1,5 +1,6 @@
 var context;
 var canvas;
+var ratio = 1;
 var points = [];
 var maxPoints = 20;
 var mouse;
@@ -41,7 +42,6 @@ function setupCanvas(){
 	context.canvas.width = window.innerWidth;
 	context.canvas.height = window.innerHeight;
 	// retinize canvas
-	var ratio = 1;
 	if(context.webkitBackingStorePixelRatio < 2)
 		ratio = window.devicePixelRatio || 1;
 	var w = context.canvas.width;
@@ -145,8 +145,8 @@ document.addEventListener("mouseup", function() {
 
 function onMouseMove(e) {
 	var rect = canvas.getBoundingClientRect();
-	mouse.x = e.clientX * 2;
-	mouse.y = e.clientY * 2;
+	mouse.x = e.clientX * ratio;
+	mouse.y = e.clientY * ratio;
 	if (points.length === 0 || mouse.x != points[0].x)
 		points.push(new Vec2f(mouse.x, mouse.y));
 	while (points.length > maxPoints) points.shift();
