@@ -2,7 +2,7 @@ var context;
 var canvas;
 var ratio = 1;
 var points = [];
-var maxPoints = 20;
+var maxPoints = 100;
 var mouse;
 var isMouseDown;
 var centre;
@@ -10,6 +10,8 @@ var theta;
 var dThetas = [];
 var maxDThetas = 30;
 var stats = new Stats();
+var isMouseMode = false;
+var noise = new ClassicalNoise();
 function Vec2f(x, y){
 	this.x = x; this.y = y;
 }
@@ -44,6 +46,7 @@ function setupCanvas(){
 	// retinize canvas
 	if(context.webkitBackingStorePixelRatio < 2)
 		ratio = window.devicePixelRatio || 1;
+	ratio = 2;
 	var w = context.canvas.width;
 	var h = context.canvas.height;
 	canvas.height = h * ratio;
@@ -57,8 +60,41 @@ function setupCanvas(){
 
 // update
 
+function getAngle(ctx, x, y, angle, h) {
+    var radians = angle * (Math.PI / 180);
+    return { x: x + h * Math.cos(radians), y: y + h * Math.sin(radians) };
+}
+
+function getRandom(min, max) {
+	var random = Math.floor(Math.random() * (max - min + 1)) + min;
+	return random;
+}
+
 function update() {
 	requestAnimFrame(update);
+
+	if (!isMouseMode){
+		var currentdate = new Date(); 
+		var datetime = "datetime: " + currentdate.getDate() + "/"
+		+ (currentdate.getMonth()+1)  + "/" 
+		+ currentdate.getFullYear() + " @ "  
+		+ currentdate.getHours() + ":"  
+		+ currentdate.getMinutes() + ":" 
+		+ currentdate.getSeconds();
+		//console.log(datetime);
+
+		var secondsRatio = (currentdate.getSeconds() + (currentdate.getMilliseconds() * 0.001)) / 60;
+		//var secondsRatio = (currentdate.getSeconds()) / 60;
+		var angle = secondsRatio*360;
+		var multIn = 0.001;
+		var multOut = canvas.width;
+		var n = noise.noise(currentdate.getSeconds() * multIn, currentdate.getSeconds() * multIn, currentdate.getSeconds() * multIn) * multOut;
+		if (n < 0) n *= -1;
+		console.log(n);
+		var pos = getAngle(context, centre.x, centre.y, angle, n);
+		points.push(pos);
+		while (points.length > maxPoints) points.shift();
+	}
 
 	stats.begin();
 
@@ -83,20 +119,22 @@ function draw() {
 	context.beginPath();
 	var i;
 	if (points.length > 0) {
-		context.moveTo(centre.x, centre.y);
-		for (i = points.length - 1; i >= 0; i--) {
+		for (i = 0; i < points.length - 1; i++) {
+			context.moveTo(centre.x, centre.y);
 			context.lineTo(points[i].x, points[i].y);
+			context.lineTo(points[i+1].x, points[i+1].y);
+			context.lineTo(centre.x, centre.y);
+			//context.closePath();
 		}
-		context.closePath();
-		context.lineWidth = 1.0;
-		context.strokeStyle = "rgba(100, 100, 100, 0.9)";
+		context.lineWidth = 1.5;
+		context.strokeStyle = "rgba(100, 100, 100, 1.0)";
 		context.stroke();
-		context.fillStyle = "rgba(200, 200, 200, 0.8)";
-		context.fill();
+		//context.fillStyle = "rgba(200, 200, 200, 0.8)";
+		//context.fill();
 	}
 
 	// draw centre
-	drawCircle(centre.x, centre.y, 2);
+	//drawCircle(centre.x, centre.y, 2);
 
 	// smooth out dtheta
 	var dThetaAvg = 0;
@@ -112,12 +150,12 @@ function draw() {
 	var r = dThetaAvg * 0.1;
 
 	// draw dtheta as a progress bar
-	context.beginPath();
-	context.moveTo(centre.x, 30);
-	context.lineTo(centre.x + (r * (context.canvas.width*0.5)), 30);
-	context.lineWidth = 3;
-	context.strokeStyle = '#333333';
-	context.stroke();
+	// context.beginPath();
+	// context.moveTo(centre.x, 30);
+	// context.lineTo(centre.x + (r * (context.canvas.width*0.5)), 30);
+	// context.lineWidth = 3;
+	// context.strokeStyle = '#333333';
+	// context.stroke();
 }
 
 function drawCircle(centerX, centerY, radius){
@@ -134,6 +172,7 @@ document.addEventListener("mousedown", function(e) {
 	// isMouseDown = true;
 	// onMouseMove(e);
 	// document.addEventListener("mousemove", onMouseMove, true);
+	isMouseMode = true;
 }, true);
 
 document.addEventListener("mouseup", function() {
@@ -141,15 +180,18 @@ document.addEventListener("mouseup", function() {
 	// isMouseDown = false;
 	// mouse.x = undefined;
 	// mouse.y = undefined;
+	isMouseMode = false;
 }, true);
 
 function onMouseMove(e) {
-	var rect = canvas.getBoundingClientRect();
-	mouse.x = e.clientX * ratio;
-	mouse.y = e.clientY * ratio;
-	if (points.length === 0 || mouse.x != points[0].x)
-		points.push(new Vec2f(mouse.x, mouse.y));
-	while (points.length > maxPoints) points.shift();
+	if (isMouseMode) {
+		var rect = canvas.getBoundingClientRect();
+		mouse.x = e.clientX * ratio;
+		mouse.y = e.clientY * ratio;
+		if (points.length === 0 || mouse.x != points[0].x)
+			points.push(new Vec2f(mouse.x, mouse.y));
+		while (points.length > maxPoints) points.shift();
+	};
 }
 
 window.onresize = function() {
