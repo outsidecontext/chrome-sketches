@@ -76,67 +76,78 @@ function getRandom(min, max) {
 
 function update() {
 	requestAnimFrame(update);
+	// incrementer for noise input
 	count+=0.001;
 	frame++;
 
 	if (!isMouseMode && frame%4===0){
-		var currentdate = new Date(); 
-		var datetime = "datetime: " + currentdate.getDate() + "/"
-		+ (currentdate.getMonth()+1)  + "/" 
-		+ currentdate.getFullYear() + " @ "  
-		+ currentdate.getHours() + ":"  
-		+ currentdate.getMinutes() + ":" 
-		+ currentdate.getSeconds();
-		//console.log(datetime);
-
+		// time
+		var currentdate = new Date();
 		var secondsRatio = (currentdate.getSeconds() + (currentdate.getMilliseconds() * 0.001)) / 60;
 		var minutessRatio = (currentdate.getMinutes()/60) + ((currentdate.getSeconds()/60) * 0.01);
 		var hoursRatio = (currentdate.getHours()/12) + ((currentdate.getMinutes()/60) * 0.01);
+		// noise
+		var xin,yin,zin,maxNoise;
+		// line
+		var angle,length,pos;
 
-		//seconds
-		//var secondsRatio = (currentdate.getSeconds()) / 60;
-		var angle = secondsRatio*360;
+
+		// seconds
+		angle = secondsRatio*360;
 		angle -= 90;
-		var multIn = 1;
-		var multOut = canvas.width/2;
+
 		// ascending blocks
-		//var n = 100 + noise.noise(currentdate.getSeconds() * multIn, currentdate.getSeconds() * currentdate.getSeconds(), currentdate.getSeconds() * multIn) * multOut;
+		// xin = currentdate.getSeconds() * 0.1;
+		// yin = currentdate.getSeconds() * currentdate.getSeconds();
+		// zin = currentdate.getSeconds() * 0.1;
+		// maxNoise = canvas.width/2;
+		// length = noise.noise(xin, yin, zin) * maxNoise;
+		// if (length < 0) length *= -1;
+
 		// round pulses
-		//var n = noise.noise(count * multIn, angle * multIn, currentdate.getSeconds() * multIn) * multOut;
+		// xin = count * 0.1;
+		// yin = angle * 0.1;
+		// zin = currentdate.getSeconds() * 0.1;
+		// maxNoise = canvas.width/2;
+		// length = noise.noise(xin, yin, zin) * maxNoise;
+		// if (length < 0) length *= -1;
+
 		// sweet curves
-		var xin = count;
-		var yin = count;//currentdate.getSeconds() * 0.01;
-		var n = (simlpex.noise(xin, yin) * canvas.width/2);
-		// force positive
-		if (n < 0) n *= -1;
-		n+=200;
-		var pos = getAngle(context, centre.x, centre.y, angle, n);
+		xin = count;
+		yin = count;//currentdate.getSeconds() * 0.01;
+		maxNoise = canvas.width/4;
+		length = (canvas.width/2) + (simlpex.noise(xin, yin) * maxNoise);
+
+		// calculate position and push it
+		pos = getAngle(context, centre.x, centre.y, angle, length);
 		points.push(pos);
 
-		// mins
+
+		// minutes
 		angle = minutessRatio*360;
 		angle -= 90;
-		n = 100 + simlpex.noise(count, count) * canvas.width/3;
-		if (n < 0) n *= -1;
-		var minutesPos = getAngle(context, centre.x, centre.y, angle, n);
-		points.push(minutesPos);
+		length = 100 + simlpex.noise(count, count) * canvas.width/3;
+		if (length < 0) length *= -1;
+		pos = getAngle(context, centre.x, centre.y, angle, length);
+		points.push(pos);
+
 
 		// hours
 		angle = hoursRatio*360;
 		angle -= 90;
-		n = 50 + simlpex.noise(count, count) * canvas.width/4;
-		if (n < 0) n *= -1;
-		var hoursPos = getAngle(context, centre.x, centre.y, angle, n);
-		points.push(hoursPos);
+		length = 50 + simlpex.noise(count, count) * canvas.width/4;
+		if (length < 0) length *= -1;
+		pos = getAngle(context, centre.x, centre.y, angle, length);
+		points.push(pos);
 
-		console.log(minutessRatio);
-
+		// cap points
 		while (points.length > maxPoints) points.shift();
 	}
 
 	stats.begin();
 
 	// angle from mouse to centre
+	// used if drawing with the mouse
 	var x = mouse.x - centre.x;
 	var y = mouse.y - centre.y;
 	var theta = Math.atan2(-y, x) * (180 / Math.PI);
@@ -164,7 +175,7 @@ function draw() {
 			context.lineTo(centre.x, centre.y);
 			//context.closePath();
 		}
-		context.lineWidth = .5;
+		context.lineWidth = 0.5;
 		context.strokeStyle = "rgba(200, 120, 100, .4)";
 		context.stroke();
 		//context.fillStyle = "rgba(200, 200, 200, 0.8)";
@@ -229,7 +240,7 @@ function onMouseMove(e) {
 		if (points.length === 0 || mouse.x != points[0].x)
 			points.push(new Vec2f(mouse.x, mouse.y));
 		while (points.length > maxPoints) points.shift();
-	};
+	}
 }
 
 window.onresize = function() {
