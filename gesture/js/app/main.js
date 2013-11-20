@@ -182,6 +182,13 @@ function update() {
 function draw() {
 	// clear
 	canvas.width = canvas.width;
+
+	// start x, y, radius; end x, y, radius
+	var grd = context.createRadialGradient(centre.x,centre.y,1,centre.x,centre.y,canvas.width*0.5);
+	grd.addColorStop(0,"#ffffff");
+	grd.addColorStop(1,"#cccccc");
+	context.fillStyle=grd;
+	context.fillRect(0,0,canvas.width,canvas.height);
 	
 	context.beginPath();
 	var i;
