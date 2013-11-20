@@ -5,6 +5,7 @@ var points = [];
 var maxPoints = 300;
 var count = 0;
 var frame = 0;
+var frameMod = 4;
 var mouse;
 var isMouseDown;
 var centre;
@@ -13,10 +14,17 @@ var dThetas = [];
 var maxDThetas = 30;
 var stats = new Stats();
 var isMouseMode = false;
+var colour = [ 200, 120, 100, 0.4 ]; // RGB with alpha
 var noise = new ClassicalNoise();
 var simlpex = new SimplexNoise();
 function Vec2f(x, y){
 	this.x = x; this.y = y;
+}
+function ClockPoint(pos,type){
+	this.pos = pos;
+	this.type = type;
+	this.x = pos.x;
+	this.y = pos.y;
 }
 
 
@@ -27,7 +35,14 @@ function onLoad() {
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.left = '0px';
 	stats.domElement.style.top = '0px';
-	document.body.appendChild( stats.domElement );
+	//document.body.appendChild( stats.domElement );
+
+	// gui
+	var gui = new dat.GUI();
+	gui.add(this, 'maxPoints', 3, 600);
+	gui.add(this, 'frameMod', 1.0, 8.0).step(1.0);
+	gui.addColor(this, 'colour');
+
 
 	// setup canvas
 	canvas = document.getElementById('canvas');
@@ -80,7 +95,7 @@ function update() {
 	count+=0.001;
 	frame++;
 
-	if (!isMouseMode && frame%4===0){
+	if (!isMouseMode && frame%frameMod===0){
 		// time
 		var currentdate = new Date();
 		var secondsRatio = (currentdate.getSeconds() + (currentdate.getMilliseconds() * 0.001)) / 60;
@@ -120,7 +135,8 @@ function update() {
 
 		// calculate position and push it
 		pos = getAngle(context, centre.x, centre.y, angle, length);
-		points.push(pos);
+		var clockPoint = new ClockPoint(pos, "S");
+		points.push(clockPoint);
 
 
 		// minutes
@@ -129,7 +145,8 @@ function update() {
 		maxNoise = canvas.height/3;
 		length = (canvas.height/3) + (simlpex.noise(count, count) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
-		points.push(pos);
+		var clockPoint = new ClockPoint(pos, "M");
+		points.push(clockPoint);
 
 
 		// hours
@@ -138,7 +155,8 @@ function update() {
 		maxNoise = canvas.height/5;
 		length = (canvas.height/5) + (simlpex.noise(count, count) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
-		points.push(pos);
+		var clockPoint = new ClockPoint(pos, "H");
+		points.push(clockPoint);
 
 		// cap points
 		while (points.length > maxPoints) points.shift();
@@ -167,6 +185,7 @@ function draw() {
 	
 	context.beginPath();
 	var i;
+	context.lineWidth = 0.5;
 	if (points.length > 0) {
 		for (i = 0; i < points.length - 1; i++) {
 			context.moveTo(centre.x, centre.y);
@@ -175,9 +194,12 @@ function draw() {
 			context.lineTo(centre.x, centre.y);
 			//context.closePath();
 		}
-		context.lineWidth = 0.5;
-		context.strokeStyle = "rgba(200, 120, 100, .4)";
+
+		//if (points[i].type == "S") {};
+		var rgba = "rgba("+Math.round(colour[0])+", "+Math.round(colour[1])+", "+Math.round(colour[2])+", "+colour[3]+")";
+		context.strokeStyle = rgba;
 		context.stroke();
+
 		//context.fillStyle = "rgba(200, 200, 200, 0.8)";
 		//context.fill();
 	}
