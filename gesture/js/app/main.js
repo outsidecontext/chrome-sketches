@@ -115,8 +115,8 @@ function update() {
 		// sweet curves
 		xin = count;
 		yin = count;//currentdate.getSeconds() * 0.01;
-		maxNoise = canvas.width/4;
-		length = (canvas.width/2) + (simlpex.noise(xin, yin) * maxNoise);
+		maxNoise = canvas.height/4;
+		length = (canvas.height/2) + (simlpex.noise(xin, yin) * maxNoise);
 
 		// calculate position and push it
 		pos = getAngle(context, centre.x, centre.y, angle, length);
@@ -126,8 +126,8 @@ function update() {
 		// minutes
 		angle = minutessRatio*360;
 		angle -= 90;
-		length = 100 + simlpex.noise(count, count) * canvas.width/3;
-		if (length < 0) length *= -1;
+		maxNoise = canvas.height/3;
+		length = (canvas.height/3) + (simlpex.noise(count, count) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
 		points.push(pos);
 
@@ -135,8 +135,8 @@ function update() {
 		// hours
 		angle = hoursRatio*360;
 		angle -= 90;
-		length = 50 + simlpex.noise(count, count) * canvas.width/4;
-		if (length < 0) length *= -1;
+		maxNoise = canvas.height/5;
+		length = (canvas.height/5) + (simlpex.noise(count, count) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
 		points.push(pos);
 
