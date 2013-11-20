@@ -64,6 +64,7 @@ function setupCanvas(){
 // update
 
 function getAngle(ctx, x, y, angle, h) {
+	//if (angle < 360)
     var radians = angle * (Math.PI / 180);
     return { x: x + h * Math.cos(radians), y: y + h * Math.sin(radians) };
 }
@@ -89,8 +90,13 @@ function update() {
 		//console.log(datetime);
 
 		var secondsRatio = (currentdate.getSeconds() + (currentdate.getMilliseconds() * 0.001)) / 60;
+		var minutessRatio = (currentdate.getMinutes()/60) + ((currentdate.getSeconds()/60) * 0.01);
+		var hoursRatio = (currentdate.getHours()/12) + ((currentdate.getMinutes()/60) * 0.01);
+
+		//seconds
 		//var secondsRatio = (currentdate.getSeconds()) / 60;
 		var angle = secondsRatio*360;
+		angle -= 90;
 		var multIn = 1;
 		var multOut = canvas.width/2;
 		// ascending blocks
@@ -100,14 +106,31 @@ function update() {
 		// sweet curves
 		var xin = count;
 		var yin = count;//currentdate.getSeconds() * 0.01;
-		var n = 100 + simlpex.noise(xin, yin) * multOut;
-
+		var n = (simlpex.noise(xin, yin) * canvas.width/2);
 		// force positive
 		if (n < 0) n *= -1;
-		
-		//console.log(n);
+		n+=200;
 		var pos = getAngle(context, centre.x, centre.y, angle, n);
 		points.push(pos);
+
+		// mins
+		angle = minutessRatio*360;
+		angle -= 90;
+		n = 100 + simlpex.noise(count, count) * canvas.width/3;
+		if (n < 0) n *= -1;
+		var minutesPos = getAngle(context, centre.x, centre.y, angle, n);
+		points.push(minutesPos);
+
+		// hours
+		angle = hoursRatio*360;
+		angle -= 90;
+		n = 50 + simlpex.noise(count, count) * canvas.width/4;
+		if (n < 0) n *= -1;
+		var hoursPos = getAngle(context, centre.x, centre.y, angle, n);
+		points.push(hoursPos);
+
+		console.log(minutessRatio);
+
 		while (points.length > maxPoints) points.shift();
 	}
 
@@ -142,7 +165,7 @@ function draw() {
 			//context.closePath();
 		}
 		context.lineWidth = .5;
-		context.strokeStyle = "rgba(200, 120, 100, 1.0)";
+		context.strokeStyle = "rgba(200, 120, 100, .4)";
 		context.stroke();
 		//context.fillStyle = "rgba(200, 200, 200, 0.8)";
 		//context.fill();
