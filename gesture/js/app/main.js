@@ -120,12 +120,12 @@ function update() {
 		// if (length < 0) length *= -1;
 
 		// round pulses
-		// xin = count * 0.1;
-		// yin = angle * 0.1;
-		// zin = currentdate.getSeconds() * 0.1;
-		// maxNoise = canvas.width/2;
-		// length = noise.noise(xin, yin, zin) * maxNoise;
-		// if (length < 0) length *= -1;
+		xin = count;
+		yin = angle * 0.1;
+		zin = currentdate.getSeconds() * 0.1;
+		maxNoise = canvas.width/2;
+		length = (noise.noise(xin, yin, zin) * maxNoise);
+		if (length < 0) length *= -1;
 
 		// sweet curves
 		xin = count;
@@ -198,7 +198,7 @@ function draw() {
 			context.moveTo(centre.x, centre.y);
 			context.lineTo(points[i].x, points[i].y);
 			context.lineTo(points[i+1].x, points[i+1].y);
-			context.lineTo(centre.x, centre.y);
+			//context.lineTo(centre.x, centre.y);
 			//context.closePath();
 		}
 
