@@ -116,7 +116,7 @@ Body.prototype.draw = function (context) {
     if (this.details.label) {
         context.fillStyle = "#ffffff";
         context.font = "1px Arial";
-        context.fillText(this.details.label, -this.details.width, 0);
+        context.fillText(this.details.label, -this.details.width+0.3, .3);
     };
  
     // If an image property is set, draw the image.

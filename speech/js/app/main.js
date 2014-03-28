@@ -3,15 +3,15 @@ function onLoad() {
 	// create some objects
 	var scale = .5
 	var colour = '#F75A53'
-	items.push({
-		shape: "block",
-		x: (25 * scale) + 12 * scale,
-		y: 13 * scale,
-		width: 1 * scale,
-		height: 2 * scale,
-		color: colour,
-		restitution: getRndRestitution()
-	});
+	// items.push({
+	// 	shape: "block",
+	// 	x: (25 * scale) + 12 * scale,
+	// 	y: 13 * scale,
+	// 	width: 1 * scale,
+	// 	height: 2 * scale,
+	// 	color: colour,
+	// 	restitution: getRndRestitution()
+	// });
 	init("canvas", items);
 }
 
@@ -33,101 +33,28 @@ onResize(element, function() {
 	resizeScene();
 });
 
-var langs =
-	[
-	['Afrikaans', ['af-ZA']],
-	['Bahasa Indonesia', ['id-ID']],
-	['Bahasa Melayu', ['ms-MY']],
-	['CatalÃ ', ['ca-ES']],
-	['ÄŒeÅ¡tina', ['cs-CZ']],
-	['Deutsch', ['de-DE']],
-	['English', ['en-AU', 'Australia'],
-		['en-CA', 'Canada'],
-		['en-IN', 'India'],
-		['en-NZ', 'New Zealand'],
-		['en-ZA', 'South Africa'],
-		['en-GB', 'United Kingdom'],
-		['en-US', 'United States']
-	],
-	['EspaÃ±ol', ['es-AR', 'Argentina'],
-		['es-BO', 'Bolivia'],
-		['es-CL', 'Chile'],
-		['es-CO', 'Colombia'],
-		['es-CR', 'Costa Rica'],
-		['es-EC', 'Ecuador'],
-		['es-SV', 'El Salvador'],
-		['es-ES', 'EspaÃ±a'],
-		['es-US', 'Estados Unidos'],
-		['es-GT', 'Guatemala'],
-		['es-HN', 'Honduras'],
-		['es-MX', 'MÃ©xico'],
-		['es-NI', 'Nicaragua'],
-		['es-PA', 'PanamÃ¡'],
-		['es-PY', 'Paraguay'],
-		['es-PE', 'PerÃº'],
-		['es-PR', 'Puerto Rico'],
-		['es-DO', 'RepÃºblica Dominicana'],
-		['es-UY', 'Uruguay'],
-		['es-VE', 'Venezuela']
-	],
-	['Euskara', ['eu-ES']],
-	['FranÃ§ais', ['fr-FR']],
-	['Galego', ['gl-ES']],
-	['Hrvatski', ['hr_HR']],
-	['IsiZulu', ['zu-ZA']],
-	['Ãslenska', ['is-IS']],
-	['Italiano', ['it-IT', 'Italia'],
-		['it-CH', 'Svizzera']
-	],
-	['Magyar', ['hu-HU']],
-	['Nederlands', ['nl-NL']],
-	['Norsk bokmÃ¥l', ['nb-NO']],
-	['Polski', ['pl-PL']],
-	['PortuguÃªs', ['pt-BR', 'Brasil'],
-		['pt-PT', 'Portugal']
-	],
-	['RomÃ¢nÄƒ', ['ro-RO']],
-	['SlovenÄina', ['sk-SK']],
-	['Suomi', ['fi-FI']],
-	['Svenska', ['sv-SE']],
-	['TÃ¼rkÃ§e', ['tr-TR']],
-	['Ð±ÑŠÐ»Ð³Ð°Ñ€ÑÐºÐ¸', ['bg-BG']],
-	['PÑƒÑÑÐºÐ¸Ð¹', ['ru-RU']],
-	['Ð¡Ñ€Ð¿ÑÐºÐ¸', ['sr-RS']],
-	['í•œêµ­ì–´', ['ko-KR']],
-	['ä¸­æ–‡', ['cmn-Hans-CN', 'æ™®é€šè¯ (ä¸­å›½å¤§é™†)'],
-		['cmn-Hans-HK', 'æ™®é€šè¯ (é¦™æ¸¯)'],
-		['cmn-Hant-TW', 'ä¸­æ–‡ (å°ç£)'],
-		['yue-Hant-HK', 'ç²µèªž (é¦™æ¸¯)']
-	],
-	['æ—¥æœ¬èªž', ['ja-JP']],
-	['Lingua latÄ«na', ['la']]
-];
-
-for (var i = 0; i < langs.length; i++) {
-	select_language.options[i] = new Option(langs[i][0], i);
+function addWord(word, colour){
+	var bodyProps = {
+		shape: "block",
+		x: Math.random() * 50,
+		y: Math.random() * -1,
+		width: word.length/3,
+		height: 1,
+		color: colour,
+		restitution: getRndRestitution(),
+		label: word
+	};
+	new Body(world, bodyProps);
 }
-select_language.selectedIndex = 6;
-updateCountry();
-select_dialect.selectedIndex = 6;
+
 showInfo('info_start');
-
-function updateCountry() {
-	for (var i = select_dialect.options.length - 1; i >= 0; i--) {
-		select_dialect.remove(i);
-	}
-	var list = langs[select_language.selectedIndex];
-	for (var i = 1; i < list.length; i++) {
-		select_dialect.options.add(new Option(list[i][1], list[i][0]));
-	}
-	select_dialect.style.visibility = list[1].length == 1 ? 'hidden' : 'visible';
-}
-
+var colours = ['#72BC8D', '#F75A53', '#497D9D'];
 var create_email = false;
 var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
+
 if (!('webkitSpeechRecognition' in window)) {
 	upgrade();
 } else {
@@ -187,26 +114,24 @@ if (!('webkitSpeechRecognition' in window)) {
 	};
 
 	recognition.onresult = function(event) {
-		console.log(event.results);
+		//console.log(event.results);
 		var interim_transcript = '';
 		for (var i = event.resultIndex; i < event.results.length; ++i) {
 			if (event.results[i].isFinal) {
 				final_transcript += event.results[i][0].transcript;
-				if (event.results[i][0].transcript) {
-					var label = event.results[i][0].transcript;
-					console.log(label);
-					colour = '#72BC8D'
-					var bodyProps = {
-						shape: "block",
-						x: Math.random() * 50,
-						y: 1,
-						width: 1,
-						height: 1,
-						color: colour,
-						restitution: getRndRestitution(),
-						label: label
+				var phrase = event.results[i][0].transcript;
+				if (phrase) {
+					//console.log(phrase);
+					var words = phrase.split(' ');
+					for (var j = 0; j < words.length; j++) {
+						var word = words[j];
+						console.log(word);
+						if (word) {
+							var colour = colours[Math.floor(Math.random()*colours.length)];
+							addWord(word, colour);
+							//setTimeout(function() { addWord(word, colour); }, 500);
+						}
 					};
-					new Body(world, bodyProps);
 				}
 			} else {
 				interim_transcript += event.results[i][0].transcript;
@@ -216,9 +141,6 @@ if (!('webkitSpeechRecognition' in window)) {
 		final_transcript = capitalize(final_transcript);
 		final_span.innerHTML = linebreak(final_transcript);
 		interim_span.innerHTML = linebreak(interim_transcript);
-		if (final_transcript || interim_transcript) {
-			showButtons('inline-block');
-		}
 	};
 }
 
@@ -242,53 +164,24 @@ function capitalize(s) {
 	});
 }
 
-function createEmail() {
-	var n = final_transcript.indexOf('\n');
-	if (n < 0 || n >= 80) {
-		n = 40 + final_transcript.substring(40).indexOf(' ');
-	}
-	var subject = encodeURI(final_transcript.substring(0, n));
-	var body = encodeURI(final_transcript.substring(n + 1));
-	window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
-}
-
-function copyButton() {
-	if (recognizing) {
-		recognizing = false;
-		recognition.stop();
-	}
-	copy_button.style.display = 'none';
-	copy_info.style.display = 'inline-block';
-	showInfo('');
-}
-
-function emailButton() {
-	if (recognizing) {
-		create_email = true;
-		recognizing = false;
-		recognition.stop();
-	} else {
-		createEmail();
-	}
-	email_button.style.display = 'none';
-	email_info.style.display = 'inline-block';
-	showInfo('');
-}
-
 function startButton(event) {
+
+	//var word = 'start';
+	//colour = colours[Math.floor(Math.random()*colours.length)];
+	//addWord(word, colour);
+
 	if (recognizing) {
 		recognition.stop();
 		return;
 	}
 	final_transcript = '';
-	recognition.lang = select_dialect.value;
+	recognition.lang = 'en-GB';
 	recognition.start();
 	ignore_onend = false;
 	final_span.innerHTML = '';
 	interim_span.innerHTML = '';
 	start_img.src = 'mic-slash.gif';
 	showInfo('info_allow');
-	showButtons('none');
 	start_timestamp = event.timeStamp;
 }
 
@@ -303,17 +196,4 @@ function showInfo(s) {
 	} else {
 		info.style.visibility = 'hidden';
 	}
-}
-
-var current_style;
-
-function showButtons(style) {
-	if (style == current_style) {
-		return;
-	}
-	current_style = style;
-	copy_button.style.display = style;
-	email_button.style.display = style;
-	copy_info.style.display = 'none';
-	email_info.style.display = 'none';
 }
