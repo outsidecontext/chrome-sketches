@@ -186,7 +186,7 @@ function draw() {
 	// start x, y, radius; end x, y, radius
 	var grd = context.createRadialGradient(centre.x,centre.y,1,centre.x,centre.y,canvas.width*0.5);
 	grd.addColorStop(0,"#ffffff");
-	grd.addColorStop(1,"#cccccc");
+	grd.addColorStop(1,"#ffffff");
 	context.fillStyle=grd;
 	context.fillRect(0,0,canvas.width,canvas.height);
 	
