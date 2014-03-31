@@ -1,14 +1,22 @@
+
 function onLoad() {
 	var items = [];
 	// create some objects
-	var scale = .5
 	var colour = '#F75A53'
 	// items.push({
 	// 	shape: "block",
-	// 	x: (25 * scale) + 12 * scale,
-	// 	y: 13 * scale,
-	// 	width: 1 * scale,
-	// 	height: 2 * scale,
+	// 	x: 50*WORLD_SCALE,
+	// 	y: 50*WORLD_SCALE,
+	// 	width: 50*WORLD_SCALE,
+	// 	height: 50*WORLD_SCALE,
+	// 	color: colour,
+	// 	restitution: getRndRestitution()
+	// });
+	// items.push({
+	// 	shape: "circle",
+	// 	x: 100*WORLD_SCALE,
+	// 	y: 50*WORLD_SCALE,
+	// 	radius: 25*WORLD_SCALE,
 	// 	color: colour,
 	// 	restitution: getRndRestitution()
 	// });
@@ -36,8 +44,8 @@ onResize(element, function() {
 function addWord(word, colour){
 	var bodyProps = {
 		shape: "block",
-		x: Math.random() * 50,
-		y: Math.random() * -1,
+		x: Math.random() * worldW,
+		y: 1 + Math.random(),
 		width: word.length/3,
 		height: 1,
 		color: colour,
@@ -166,9 +174,9 @@ function capitalize(s) {
 
 function startButton(event) {
 
-	//var word = 'start';
-	//colour = colours[Math.floor(Math.random()*colours.length)];
-	//addWord(word, colour);
+	// var word = 'start';
+	// colour = colours[Math.floor(Math.random()*colours.length)];
+	// addWord(word, colour);
 
 	if (recognizing) {
 		recognition.stop();
