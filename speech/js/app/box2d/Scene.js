@@ -147,7 +147,7 @@ function update() {
 	//var context = document.getElementById("canvas").getContext("2d");
 	context.canvas.width = window.innerWidth;
 	// Just use half the screen for now
-	context.canvas.height = window.innerHeight * 0.5;
+	context.canvas.height = window.innerHeight * 0.8;
 	context.clearRect(0, 0, document.getElementById("canvas").width, document.getElementById("canvas").height);
 	context.save();
 	//context.scale(scale, scale);

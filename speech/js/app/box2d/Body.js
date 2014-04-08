@@ -8,9 +8,9 @@
 
 var Body = window.Body = function(world, details) {
 	this.details = details = details || {};
-	this.font = "30px Helvetica";
-	this.fontHeight = 26;
-	var borderx2 = 12;
+	this.font = "50px Helvetica";
+	this.fontHeight = 34;
+	var borderx2 = -2;
 
 	// Create the definition
 	this.definition = new b2BodyDef();
@@ -43,7 +43,8 @@ var Body = window.Body = function(world, details) {
 		details.height = (this.fontHeight + borderx2) * WORLD_SCALE;
 		this.fixtureDef.shape = new b2PolygonShape();
 		this.fixtureDef.shape.SetAsBox(details.width / 2, details.height / 2);
-	} else {
+	}
+	else {
 		switch (details.shape) {
 			case "circle":
 				details.radius = details.radius || this.defaults.radius;
@@ -75,7 +76,7 @@ Body.prototype.defaults = {
 
 Body.prototype.fixtureDefaults = {
 	density: 2,
-	friction: .2,
+	friction: 0.2,
 	restitution: 0.2
 };
 
@@ -101,8 +102,22 @@ Body.prototype.draw = function(context) {
 	context.rotate(angle);
 
 
-	// Draw the shape outline if the shape has a color
-	if (this.details.color) {
+	if (this.details.label) {
+		context.fillStyle = "#ff0000";
+		// context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5, this.details.width * WORLD_SCALE_INV, this.details.height * WORLD_SCALE_INV);
+		context.fillStyle = this.details.color;
+		context.font = this.font;
+		context.fillText(this.details.label, -this.details.metrics.width * 0.5, this.fontHeight * 0.3);
+	}
+	// If an image property is set, draw the image.
+	else if (this.details.image) {
+		context.drawImage(this.details.image, -this.details.width / 2, -this.details.height / 2,
+			this.details.width,
+			this.details.height);
+
+	}
+	// just draw a solid shape
+	else if (this.details.color) {
 		context.fillStyle = this.details.color;
 		switch (this.details.shape) {
 			case "circle":
@@ -120,26 +135,13 @@ Body.prototype.draw = function(context) {
 				context.fill();
 				break;
 			case "block":
-				context.fillRect(-this.details.width * WORLD_SCALE_INV * .5, -this.details.height * WORLD_SCALE_INV * .5,
+				context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5,
 					this.details.width * WORLD_SCALE_INV,
 					this.details.height * WORLD_SCALE_INV);
+				break;
 			default:
 				break;
 		}
-	}
-
-	if (this.details.label) {
-		context.fillStyle = "#ffffff";
-		context.font = this.font;
-		context.fillText(this.details.label, -this.details.metrics.width * 0.5, 10);
-	};
-
-	// If an image property is set, draw the image.
-	if (this.details.image) {
-		context.drawImage(this.details.image, -this.details.width / 2, -this.details.height / 2,
-			this.details.width,
-			this.details.height);
-
 	}
 	context.restore();
 };

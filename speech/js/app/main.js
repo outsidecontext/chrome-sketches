@@ -42,21 +42,32 @@ onResize(element, function() {
 });
 
 function addWord(word, colour){
+	var x = Math.random() * worldW * 0.5;
+	for (var i = 0; i < word.length; i++) {
+		var letter = word[i];
+		//console.log(letter);
+		var body = addChar(letter, "#000000", x);
+		x += body.details.width;
+	}
+}
+
+function addChar(letter, colour, x) {
 	var bodyProps = {
 		shape: "block",
-		x: Math.random() * worldW,
-		y: 1 + Math.random(),
-		width: word.length/3,
+		x: x,
+		y: 1,// + Math.random(),
+		width: letter.length/3,
 		height: 1,
 		color: colour,
 		restitution: getRndRestitution(),
-		label: word
+		label: letter
 	};
-	new Body(world, bodyProps);
+	return new Body(world, bodyProps);
 }
 
 showInfo('info_start');
 var colours = ['#72BC8D', '#F75A53', '#497D9D'];
+var words = ['cellar', 'door', 'geranium'];
 var create_email = false;
 var final_transcript = '';
 var recognizing = false;
@@ -174,9 +185,9 @@ function capitalize(s) {
 
 function startButton(event) {
 
-	// var word = 'start';
-	// colour = colours[Math.floor(Math.random()*colours.length)];
-	// addWord(word, colour);
+	var word = words[Math.floor(Math.random()*words.length)];
+	colour = colours[Math.floor(Math.random()*colours.length)];
+	addWord(word, colour);
 
 	if (recognizing) {
 		recognition.stop();
