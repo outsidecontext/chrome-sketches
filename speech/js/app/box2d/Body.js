@@ -8,8 +8,9 @@
 
 var Body = window.Body = function(world, details) {
 	this.details = details = details || {};
-	this.font = "50px Helvetica";
-	this.fontHeight = 34;
+	this.font = "30px Helvetica";
+	this.fontHeight = 24;
+	this.drawBg = false;
 	var borderx2 = -2;
 
 	// Create the definition
@@ -103,9 +104,14 @@ Body.prototype.draw = function(context) {
 
 
 	if (this.details.label) {
-		context.fillStyle = "#ff0000";
-		// context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5, this.details.width * WORLD_SCALE_INV, this.details.height * WORLD_SCALE_INV);
-		context.fillStyle = this.details.color;
+		if (this.drawBg) {
+			context.fillStyle = this.details.color;//"#ff0000";
+			context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5, this.details.width * WORLD_SCALE_INV, this.details.height * WORLD_SCALE_INV);
+			context.fillStyle = "#ffffff";
+		}
+		else {
+			context.fillStyle = this.details.color;
+		}
 		context.font = this.font;
 		context.fillText(this.details.label, -this.details.metrics.width * 0.5, this.fontHeight * 0.3);
 	}
