@@ -47,7 +47,7 @@ function addDelayedWord(word, colour, delay) {
 
 function addWord(word, colour, x){
 	var width = 0;
-	var x = x || Math.random() * worldW * 0.5;
+	var x = x || 5 + (Math.random() * (worldW*0.6));
 	var colour = colour || colours[Math.floor(Math.random()*colours.length)];
 	for (var i = 0; i < word.length; i++) {
 		var letter = word[i];
