@@ -46,7 +46,8 @@ function addWord(word, colour){
 	for (var i = 0; i < word.length; i++) {
 		var letter = word[i];
 		//console.log(letter);
-		var body = addChar(letter, "#000000", x);
+		//var body = addChar(letter, "#000000", x);
+		var body = addChar(letter, colour, x);
 		x += body.details.width;
 	}
 }
