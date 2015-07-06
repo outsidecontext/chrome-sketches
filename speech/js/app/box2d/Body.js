@@ -6,148 +6,195 @@
 // Based on http://buildnewgames.com/box2dweb/
 //
 
-var Body = window.Body = function(world, details) {
-	this.details = details = details || {};
-	this.font = "30px Helvetica";
-	this.fontHeight = 24;
-	this.drawBg = false;
-	var borderx2 = -2;
+var Body = window.Body =  function(world, details) {
+    this.details = details = details || {};
+    this.font = "30px Helvetica";
+    this.fontHeight = 24;
+    this.drawBg = false;
+    var borderx2 = -2;
 
-	// Create the definition
-	this.definition = new b2BodyDef();
+    // Create the definition
+    this.definition = new b2BodyDef();
 
-	// Set up the definition
-	for (var k in this.definitionDefaults) {
-		this.definition[k] = details[k] || this.definitionDefaults[k];
-	}
-	this.definition.position = new b2Vec2(details.x || 0, details.y || 0);
-	this.definition.linearVelocity = new b2Vec2(details.vx || 0, details.vy || 0);
-	this.definition.userData = this;
-	this.definition.type = details.type == "static" ? b2Body.b2_staticBody : b2Body.b2_dynamicBody;
+    // Set up the definition
+    for (var k in this.definitionDefaults) {
+        this.definition[k] = details[k] || this.definitionDefaults[k];
+    }
+    this.definition.set_position(new b2Vec2(details.x || 0, details.y || 0));
+    // this.definition.linearVelocity = new b2Vec2(details.vx || 0, details.vy || 0);
+    this.definition.set_userData(this);
+    if (details.type == "static")
+        this.definition.set_type( Box2D.b2_staticBody );
+    else
+        this.definition.set_type( Box2D.b2_dynamicBody );
 
-	// Create the Body
-	this.body = world.CreateBody(this.definition);
+    // Create the Body
+    this.body = world.CreateBody(this.definition);
+    this.body.SetLinearVelocity(new b2Vec2(details.vx || 0, details.vy || 0));
+    this.body.SetAwake(1);
+    this.body.SetActive(1);
+    this.body.userdata = this;
 
-	// Create the fixture
-	this.fixtureDef = new b2FixtureDef();
-	for (var l in this.fixtureDefaults) {
-		this.fixtureDef[l] = details[l] || this.fixtureDefaults[l];
-	}
+    // Create the fixture
+    this.fixtureDef = new b2FixtureDef();
 
-	details.shape = details.shape || this.defaults.shape;
+    this.fixtureDef.set_restitution(details.restitution);
+    this.fixtureDef.set_density(5.0);
 
-	if (details.label) {
-		// get text metrics
-		context.font = this.font;
-		details.metrics = context.measureText(details.label);
-		details.width = (details.metrics.width + borderx2) * WORLD_SCALE;
-		details.height = (this.fontHeight + borderx2) * WORLD_SCALE;
-		this.fixtureDef.shape = new b2PolygonShape();
-		this.fixtureDef.shape.SetAsBox(details.width / 2, details.height / 2);
-	}
-	else {
-		switch (details.shape) {
-			case "circle":
-				details.radius = details.radius || this.defaults.radius;
-				this.fixtureDef.shape = new b2CircleShape(details.radius);
-				break;
-			case "polygon":
-				this.fixtureDef.shape = new b2PolygonShape();
-				this.fixtureDef.shape.SetAsArray(details.points, details.points.length);
-				break;
-			case "block":
-			default:
-				details.width = details.width;
-				details.height = details.height;
-				this.fixtureDef.shape = new b2PolygonShape();
-				this.fixtureDef.shape.SetAsBox(details.width / 2, details.height / 2);
-				break;
-		}
-	}
+    // for (var l in this.fixtureDefaults) {
+    //     this.fixtureDef[l] = details[l] || this.fixtureDefaults[l];
+    // }
 
-	this.body.CreateFixture(this.fixtureDef);
+    details.shape = details.shape || this.defaults.shape;
+    var shape = null;
+
+    if (details.label) {
+        // get text metrics
+        context.font = this.font;
+        details.metrics = context.measureText(details.label);
+        details.width = (details.metrics.width + borderx2) * WORLD_SCALE;
+        details.height = (this.fontHeight + borderx2) * WORLD_SCALE;
+        shape = new b2PolygonShape();
+        shape.SetAsBox(details.width / 2, details.height / 2);
+    }
+    else {
+        switch (details.shape) {
+            case "circle":
+                details.radius = details.radius || this.defaults.radius;
+                shape = new b2CircleShape(details.radius);
+                shape.set_m_radius(details.radius);
+                break;
+            case "polygon":
+                shape = new b2PolygonShape();
+                shape.SetAsArray(details.points, details.points.length);
+                break;
+            case "block":
+            default:
+                details.width = details.width;
+                details.height = details.height;
+                var w = (details.width / 2);
+                var h = (details.height / 2);
+                var shape = new b2PolygonShape();
+                shape.SetAsBox(w, h);
+                break;
+        }
+    }
+
+    // console.log(shape);
+    // console.log(this.fixtureDef);
+
+    this.fixtureDef.set_shape( shape );
+    this.body.CreateFixture(this.fixtureDef);
+
+
+    this.graphics = new PIXI.Sprite();
+    stage.addChild(this.graphics);
+
+    this.bg = new PIXI.Graphics();
+    this.bg.beginFill(0xff0000);
+    this.bg.drawCircle(0, 0, 10);
+    this.bg.endFill;
+    this.graphics.addChild(this.bg);
+
+    var style = {
+        font: this.font,
+        align: 'center',
+        fill: '#00ff00',
+        wordWrap: true,
+        wordWrapWidth: 500
+    };
+    this.graphicsLabel = new PIXI.Text(details.label || "X", style);
+    this.graphics.addChild(this.graphicsLabel);
 };
 
 Body.prototype.defaults = {
-	shape: "block",
-	width: 5,
-	height: 5,
-	radius: 2.5
+    shape: "block",
+    width: 5,
+    height: 5,
+    radius: 2.5
 };
 
 Body.prototype.fixtureDefaults = {
-	density: 2,
-	friction: 0.2,
-	restitution: 0.2
+    density: 2,
+    friction: 0.2,
+    restitution: 0.2
 };
 
 Body.prototype.definitionDefaults = {
-	active: true,
-	allowSleep: true,
-	angle: 0,
-	angularVelocity: 0,
-	awake: true,
-	bullet: false,
-	fixedRotation: false
+    active: true,
+    allowSleep: true,
+    angle: 0,
+    angularVelocity: 0,
+    awake: true,
+    bullet: false,
+    fixedRotation: false
 };
 
 Body.prototype.draw = function(context) {
-	var pos = this.body.GetPosition();
-	var angle = this.body.GetAngle();
+    var pos = this.body.GetPosition();
+    var angle = this.body.GetAngle();
 
-	// Save the context
-	context.save();
-
-	// Translate and rotate
-	context.translate(pos.x * WORLD_SCALE_INV, pos.y * WORLD_SCALE_INV);
-	context.rotate(angle);
+    this.graphics.position.x = pos.get_x() * WORLD_SCALE_INV;
+    this.graphics.position.y = pos.get_y() * WORLD_SCALE_INV;
 
 
-	if (this.details.label) {
-		if (this.drawBg) {
-			context.fillStyle = this.details.color;//"#ff0000";
-			context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5, this.details.width * WORLD_SCALE_INV, this.details.height * WORLD_SCALE_INV);
-			context.fillStyle = "#ffffff";
-		}
-		else {
-			context.fillStyle = this.details.color;
-		}
-		context.font = this.font;
-		context.fillText(this.details.label, -this.details.metrics.width * 0.5, this.fontHeight * 0.3);
-	}
-	// If an image property is set, draw the image.
-	else if (this.details.image) {
-		context.drawImage(this.details.image, -this.details.width / 2, -this.details.height / 2,
-			this.details.width,
-			this.details.height);
 
-	}
-	// just draw a solid shape
-	else if (this.details.color) {
-		context.fillStyle = this.details.color;
-		switch (this.details.shape) {
-			case "circle":
-				context.beginPath();
-				context.arc(0, 0, this.details.radius * WORLD_SCALE_INV, 0, Math.PI * 2);
-				context.fill();
-				break;
-			case "polygon":
-				var points = this.details.points;
-				context.beginPath();
-				context.moveTo(points[0].x, points[0].y);
-				for (var i = 1; i < points.length; i++) {
-					context.lineTo(points[i].x, points[i].y);
-				}
-				context.fill();
-				break;
-			case "block":
-				context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5,
-					this.details.width * WORLD_SCALE_INV,
-					this.details.height * WORLD_SCALE_INV);
-				break;
-			default:
-				break;
-		}
-	}
-	context.restore();
+
+    /*
+
+    // Save the context
+    context.save();
+
+    // Translate and rotate
+    context.translate(pos.get_x() * WORLD_SCALE_INV, pos.get_y() * WORLD_SCALE_INV);
+    context.rotate(angle);
+
+
+    if (this.details.label) {
+        if (this.drawBg) {
+            context.fillStyle = this.details.color; //"#ff0000";
+            context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5, this.details.width * WORLD_SCALE_INV, this.details.height * WORLD_SCALE_INV);
+            context.fillStyle = "#ffffff";
+        } else {
+            context.fillStyle = this.details.color;
+        }
+        context.font = this.font;
+        context.fillText(this.details.label, -this.details.metrics.width * 0.5, this.fontHeight * 0.3);
+    }
+    // If an image property is set, draw the image.
+    else if (this.details.image) {
+        context.drawImage(this.details.image, -this.details.width / 2, -this.details.height / 2,
+            this.details.width,
+            this.details.height);
+
+    }
+    // just draw a solid shape
+    else if (this.details.color) {
+        context.fillStyle = this.details.color;
+        switch (this.details.shape) {
+            case "circle":
+                context.beginPath();
+                context.arc(0, 0, this.details.radius * WORLD_SCALE_INV, 0, Math.PI * 2);
+                context.fill();
+                break;
+            case "polygon":
+                var points = this.details.points;
+                context.beginPath();
+                context.moveTo(points[0].x, points[0].y);
+                for (var i = 1; i < points.length; i++) {
+                    context.lineTo(points[i].x, points[i].y);
+                }
+                context.fill();
+                break;
+            case "block":
+                context.fillRect(-this.details.width * WORLD_SCALE_INV * 0.5, -this.details.height * WORLD_SCALE_INV * 0.5,
+                    this.details.width * WORLD_SCALE_INV,
+                    this.details.height * WORLD_SCALE_INV);
+                break;
+            default:
+                break;
+        }
+    }
+    context.restore();
+    */
 };

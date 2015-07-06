@@ -64,7 +64,7 @@ function addWord(word, colour, x){
 	var colour = colour || colours[Math.floor(Math.random()*colours.length)];
 	for (var i = 0; i < word.length; i++) {
 		var letter = word[i];
-		//console.log(letter);
+		// console.log(letter);
 		var body = addChar(letter, colour, x);
 		width += body.details.width;
 		x += body.details.width + 0.01;
@@ -77,7 +77,7 @@ function addChar(letter, colour, x) {
 		var bodyProps = {
 			shape: "block",
 			x: x,
-			y: -1,// + Math.random(),
+			y: 1,// + Math.random(),
 			width: letter.length/3,
 			height: 1,
 			color: colour,
