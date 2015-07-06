@@ -21,6 +21,7 @@ function onLoad() {
 	// 	restitution: getRndRestitution()
 	// });
 	init("canvas", items);
+	startButton();
 }
 
 function onResize(element, callback) {
@@ -80,7 +81,7 @@ function addChar(letter, colour, x) {
 			y: -1,// + Math.random(),
 			width: letter.length/3,
 			height: 1,
-			color: colour,
+			colour: colour,
 			restitution: getRndRestitution(),
 			label: letter
 		};
@@ -93,7 +94,7 @@ function addChar(letter, colour, x) {
 
 showInfo('info_start');
 var colours = ['#72BC8D', '#F75A53', '#497D9D'];
-var words = ['cellar door', 'the quick brown fox'];
+var words = ['talk to me'];
 var create_email = false;
 var final_transcript = '';
 var recognizing = false;
@@ -229,3 +230,10 @@ function showInfo(s) {
 		info.style.visibility = 'hidden';
 	}
 }
+
+function onMousePress(event) {
+    startButton();
+}
+
+window.addEventListener('mousedown', onMousePress, false);
+window.addEventListener('touchstart', onMousePress, false);
