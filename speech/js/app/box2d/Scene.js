@@ -23,6 +23,23 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
 	b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef;
 
+///////////////////////////////////////////////////////////////////////////////
+// PIXI
+/////////////////////////////////////////////////////////////////////////////
+var renderer = new PIXI.autoDetectRenderer(600, 600, {
+    resolution: window.devicePixelRatio || 1,
+    autoResize: true
+});
+PIXI.RESOLUTION = window.devicePixelRatio;
+document.body.appendChild(renderer.view);
+renderer.backgroundColor = 0xffffff;
+var stage = new PIXI.Container();
+
+
+
+
+
+
 // requestAnim shim layer by Paul Irish
 window.requestAnimFrame = (function() {
 	return window.requestAnimationFrame ||
@@ -41,6 +58,7 @@ function init(canvasId, items) {
 	context = document.getElementById(canvasId).getContext("2d");
 	worldW = $(canvasId).width() / 30;
 	worldH = $(canvasId).height() / 30;
+	
 	// stats = new Stats();
 	// stats.setMode(0);
 	// document.body.appendChild( stats.domElement );
@@ -138,6 +156,7 @@ function animate() {
 	// stats.begin();
 	update();
 	// stats.end();
+    renderer.render(stage);
 }
 
 function update() {

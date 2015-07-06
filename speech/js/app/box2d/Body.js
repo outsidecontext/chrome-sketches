@@ -38,10 +38,10 @@ var Body = window.Body = function(world, details) {
 
 	if (details.label) {
 		// get text metrics
-		context.font = this.font;
-		details.metrics = context.measureText(details.label);
-		details.width = (details.metrics.width + borderx2) * WORLD_SCALE;
-		details.height = (this.fontHeight + borderx2) * WORLD_SCALE;
+		// context.font = this.font;
+		// details.metrics = context.measureText(details.label);
+		details.width = 1;//(details.metrics.width + borderx2) * WORLD_SCALE;
+		details.height = 1;//(this.fontHeight + borderx2) * WORLD_SCALE;
 		this.fixtureDef.shape = new b2PolygonShape();
 		this.fixtureDef.shape.SetAsBox(details.width / 2, details.height / 2);
 	}
@@ -66,6 +66,26 @@ var Body = window.Body = function(world, details) {
 	}
 
 	this.body.CreateFixture(this.fixtureDef);
+
+    this.graphics = new PIXI.Sprite();
+    stage.addChild(this.graphics);
+
+    this.bg = new PIXI.Graphics();
+    this.bg.beginFill(0xff0000);
+    this.bg.drawCircle(0, 0, 10);
+    this.bg.endFill;
+    this.graphics.addChild(this.bg);
+
+    var style = {
+        font: this.font,
+        align: 'center',
+        fill: '#00ff00',
+        wordWrap: true,
+        wordWrapWidth: 500
+    };
+    this.graphicsLabel = new PIXI.Text(details.label || "X", style);
+    this.graphics.addChild(this.graphicsLabel);
+
 };
 
 Body.prototype.defaults = {
@@ -94,7 +114,11 @@ Body.prototype.definitionDefaults = {
 Body.prototype.draw = function(context) {
 	var pos = this.body.GetPosition();
 	var angle = this.body.GetAngle();
+    this.graphics.position.x = pos.x * WORLD_SCALE_INV;
+    this.graphics.position.y = pos.y * WORLD_SCALE_INV;
 
+
+    /*
 	// Save the context
 	context.save();
 
@@ -150,4 +174,5 @@ Body.prototype.draw = function(context) {
 		}
 	}
 	context.restore();
+    */
 };
