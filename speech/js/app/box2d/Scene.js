@@ -36,10 +36,6 @@ renderer.backgroundColor = 0xffffff;
 var stage = new PIXI.Container();
 
 
-
-
-
-
 // requestAnim shim layer by Paul Irish
 window.requestAnimFrame = (function() {
 	return window.requestAnimationFrame ||
@@ -58,7 +54,7 @@ function init(canvasId, items) {
 	context = document.getElementById(canvasId).getContext("2d");
 	worldW = $(canvasId).width() / 30;
 	worldH = $(canvasId).height() / 30;
-	
+
 	// stats = new Stats();
 	// stats.setMode(0);
 	// document.body.appendChild( stats.domElement );
@@ -96,13 +92,13 @@ function initBox2d() {
 		new Body(world, items[i]);
 	};
 	// setup debug draw
-	var debugDraw = new b2DebugDraw();
-	debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-	debugDraw.SetDrawScale(30.0);
-	debugDraw.SetFillAlpha(0.3);
-	debugDraw.SetLineThickness(1.0);
-	debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-	world.SetDebugDraw(debugDraw);
+	// var debugDraw = new b2DebugDraw();
+	// debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+	// debugDraw.SetDrawScale(30.0);
+	// debugDraw.SetFillAlpha(0.3);
+	// debugDraw.SetLineThickness(1.0);
+	// debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+	// world.SetDebugDraw(debugDraw);
 };
 
 
@@ -164,17 +160,18 @@ function update() {
 
 	var scale = 30;
 	//var context = document.getElementById("canvas").getContext("2d");
-	context.canvas.width = window.innerWidth;
-	// Just use half the screen for now
-	context.canvas.height = window.innerHeight * 0.8;
-	context.clearRect(0, 0, document.getElementById("canvas").width, document.getElementById("canvas").height);
-	context.save();
+	// context.canvas.width = window.innerWidth;
+	// // Just use half the screen for now
+	// context.canvas.height = window.innerHeight * 0.8;
+	// context.clearRect(0, 0, document.getElementById("canvas").width, document.getElementById("canvas").height);
+	// context.save();
+	
 	//context.scale(scale, scale);
 	for (var b = this.world.GetBodyList(); b; b = b.m_next) {
 		var body = b.GetUserData();
 		if (body) body.draw(context);
 	}
-	context.restore();
+	// context.restore();
 
 	if (isMouseDown && (!mouseJoint)) {
 		var body = getBodyAtMouse();
@@ -204,32 +201,33 @@ function update() {
 };
 
 function resizeScene() {
-	worldW = context.canvas.width / 30;
-	worldH = context.canvas.height / 30;
-	world.DestroyBody(floor.body);
-	floor = new Body(world, {
-		type: "static",
-		x: 0,
-		y: worldH,
-		height: 0,
-		width: worldW * 2
-	});
-	world.DestroyBody(leftWall.body);
-	leftWall = new Body(world, {
-		type: "static",
-		x: 0,
-		y: worldH - 0.5,
-		height: worldH * 2,
-		width: 0
-	});
-	world.DestroyBody(rightWall.body);
-	rightWall = new Body(world, {
-		type: "static",
-		x: worldW,
-		y: worldH - 0.5,
-		height: worldH * 2,
-		width: 0
-	});
+	// worldW = context.canvas.width / 30;
+	// worldH = context.canvas.height / 30;
+	// world.DestroyBody(floor.body);
+	// floor = new Body(world, {
+	// 	type: "static",
+	// 	x: 0,
+	// 	y: worldH,
+	// 	height: 0,
+	// 	width: worldW * 2
+	// });
+	// world.DestroyBody(leftWall.body);
+	// leftWall = new Body(world, {
+	// 	type: "static",
+	// 	x: 0,
+	// 	y: worldH - 0.5,
+	// 	height: worldH * 2,
+	// 	width: 0
+	// });
+	// world.DestroyBody(rightWall.body);
+	// rightWall = new Body(world, {
+	// 	type: "static",
+	// 	x: worldW,
+	// 	y: worldH - 0.5,
+	// 	height: worldH * 2,
+	// 	width: 0
+	// });
+
 }
 
 // helpers

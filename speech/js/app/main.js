@@ -46,7 +46,7 @@ function addPhrase(phrase) {
 	var words = phrase.split(' ');
 	for (var j = 0; j < words.length; j++) {
 		var word = words[j];
-		console.log(word);
+		// console.log(word);
 		if (word) {
 			var colour = colours[Math.floor(Math.random()*colours.length)];
 			addDelayedWord(word, colour, 500*j);

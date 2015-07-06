@@ -13,9 +13,35 @@ var Body = window.Body = function(world, details) {
 	this.drawBg = false;
 	var borderx2 = -2;
 
+
+    // PIXI
+    this.graphics = new PIXI.Sprite();
+    this.graphics.anchor.x = 0.5;
+    this.graphics.anchor.y = 0.5;
+    stage.addChild(this.graphics);
+    // char label
+    var style = {
+        font: this.font,
+        align: 'center',
+        fill: '#00ff00',
+        wordWrap: true,
+        wordWrapWidth: 500
+    };
+    this.graphicsLabel = new PIXI.Text(details.label || "X", style);
+    this.graphicsLabel.anchor.x = 0.5;
+    this.graphicsLabel.anchor.y = 0.5;
+    // bg
+    var w = this.graphicsLabel.width;//details.width*30;
+    var h = this.graphicsLabel.height * 0.7;//details.height*30
+    this.bg = new PIXI.Graphics();
+    this.bg.beginFill(0xff0000);
+    this.bg.drawRect(-w/2, -h/2, w, h);
+    this.bg.endFill;
+
+
+    // BOX
 	// Create the definition
 	this.definition = new b2BodyDef();
-
 	// Set up the definition
 	for (var k in this.definitionDefaults) {
 		this.definition[k] = details[k] || this.definitionDefaults[k];
@@ -24,24 +50,20 @@ var Body = window.Body = function(world, details) {
 	this.definition.linearVelocity = new b2Vec2(details.vx || 0, details.vy || 0);
 	this.definition.userData = this;
 	this.definition.type = details.type == "static" ? b2Body.b2_staticBody : b2Body.b2_dynamicBody;
-
 	// Create the Body
 	this.body = world.CreateBody(this.definition);
-
 	// Create the fixture
 	this.fixtureDef = new b2FixtureDef();
 	for (var l in this.fixtureDefaults) {
 		this.fixtureDef[l] = details[l] || this.fixtureDefaults[l];
 	}
-
 	details.shape = details.shape || this.defaults.shape;
-
 	if (details.label) {
 		// get text metrics
 		// context.font = this.font;
 		// details.metrics = context.measureText(details.label);
-		details.width = 1;//(details.metrics.width + borderx2) * WORLD_SCALE;
-		details.height = 1;//(this.fontHeight + borderx2) * WORLD_SCALE;
+		details.width = w * WORLD_SCALE;
+		details.height = h * WORLD_SCALE;
 		this.fixtureDef.shape = new b2PolygonShape();
 		this.fixtureDef.shape.SetAsBox(details.width / 2, details.height / 2);
 	}
@@ -67,23 +89,8 @@ var Body = window.Body = function(world, details) {
 
 	this.body.CreateFixture(this.fixtureDef);
 
-    this.graphics = new PIXI.Sprite();
-    stage.addChild(this.graphics);
 
-    this.bg = new PIXI.Graphics();
-    this.bg.beginFill(0xff0000);
-    this.bg.drawCircle(0, 0, 10);
-    this.bg.endFill;
     this.graphics.addChild(this.bg);
-
-    var style = {
-        font: this.font,
-        align: 'center',
-        fill: '#00ff00',
-        wordWrap: true,
-        wordWrapWidth: 500
-    };
-    this.graphicsLabel = new PIXI.Text(details.label || "X", style);
     this.graphics.addChild(this.graphicsLabel);
 
 };
@@ -116,6 +123,7 @@ Body.prototype.draw = function(context) {
 	var angle = this.body.GetAngle();
     this.graphics.position.x = pos.x * WORLD_SCALE_INV;
     this.graphics.position.y = pos.y * WORLD_SCALE_INV;
+    this.graphics.rotation = angle;
 
 
     /*
