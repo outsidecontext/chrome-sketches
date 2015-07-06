@@ -4,7 +4,7 @@
 
 var Body = window.Body = function(world, details) {
     this.details = details = details || {};
-    this.font = "40px Helvetica";
+    this.font = details.font || "40px Helvetica";
     this.fontHeight = 24;
     this.drawBg = false;
     var borderx2 = -2;
