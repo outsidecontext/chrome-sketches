@@ -38,7 +38,7 @@ Sierpinski.prototype.drawSierpinskiTriangle = function(depth, centre, size)
     // Remove the triangle (draw white) which is defined by the 
     // midpoints of the sides of the initial triangle. Recursively
     // execute this process for the remaining 3 triangles.
-    this.context.fillStyle = "#001133";
+    this.context.fillStyle = "#ffffff";
     if (depth > this.maxDepth) { // make sure that depth doesn't get too high
         depth = this.maxDepth;
         document.getElementById('depthStepper').value = depth;

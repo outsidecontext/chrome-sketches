@@ -5,16 +5,16 @@ var mouse;
 var isMouseDown = false;
 var triangle;
 var depth = 1;
-var scale = 1;
+var scale = 6;
 
 function onLoad() {
-	console.log("onload");
+	//console.log("onload");
 	triangle = new Sierpinski();
 	console.log(triangle);
 	setInterval(function(){
 		depth++;
-		if (depth > 10) depth = 1;
-	},500);
+		if (depth > 10) depth = 10;
+	},1000);
 	setupCommon();
 }
 
@@ -58,9 +58,8 @@ function update() {
 
 function draw() {
 	// additive blending?
-	context.globalCompositeOperation = "lighter";
-	//context.globalCompositeOperation = "source-atop";
-	//context.globalCompositeOperation = "xor";
+	// if so, make canvas dark, triangles not white/black
+	//context.globalCompositeOperation = "lighter";
 	if (isMouseDown) {
 		triangle.drawSierpinskiTriangle(depth, mouse, 20*scale);
 	}
@@ -101,7 +100,7 @@ function onMouseMove(e) {
 }
 
 window.onresize = function() {
-	setupCanvas();
+	//setupCanvas();
 };
 
 

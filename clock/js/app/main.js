@@ -123,7 +123,7 @@ function update() {
 		xin = count;
 		yin = angle * 0.1;
 		zin = currentdate.getSeconds() * 0.1;
-		maxNoise = canvas.width/2;
+		maxNoise = canvas.height/2;
 		length = (noise.noise(xin, yin, zin) * maxNoise);
 		if (length < 0) length *= -1;
 
@@ -131,7 +131,7 @@ function update() {
 		xin = count;
 		yin = count;//currentdate.getSeconds() * 0.01;
 		maxNoise = canvas.height/4;
-		length = (canvas.height/2) + (simlpex.noise(xin, yin) * maxNoise);
+		length = (canvas.height/3) + (simlpex.noise(xin, yin) * maxNoise);
 
 		// calculate position and push it
 		pos = getAngle(context, centre.x, centre.y, angle, length);
