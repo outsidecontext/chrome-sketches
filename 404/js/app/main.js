@@ -9,10 +9,10 @@ function onLoad(){
 	items.push( { shape: "block", x:11.5*scale, y:10*scale, width:1*scale, height:2*scale, color:colour, restitution: getRndRestitution() } );
 	items.push( { shape: "block", x:12*scale, y:13*scale, width:1*scale, height:2*scale, color:colour, restitution: getRndRestitution() } );
 	// // 0 //////////////////
-	colour = '#72BC8D'
+	colour = '#F75A53'
 	items.push( { shape: "circle", x:23*scale, y:10*scale, radius:2*scale, color:colour, restitution: getRndRestitution() });
 	// // 4 //////////////////
-	colour = '#497D9D'
+	colour = '#F75A53'
 	items.push( { shape: "block", x:(25*scale) + 6*scale, y:6*scale, width:1*scale, height:6*scale, color:colour, restitution: getRndRestitution() } );
 	items.push( { shape: "block", x:(25*scale) + 12*scale, y:12*scale, width:6*scale, height:1*scale, color:colour, restitution: getRndRestitution() } );
 	items.push( { shape: "block", x:(25*scale) + 11.5*scale, y:10*scale, width:1*scale, height:2*scale, color:colour, restitution: getRndRestitution() } );

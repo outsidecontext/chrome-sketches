@@ -17,6 +17,7 @@ var isMouseMode = false;
 var colour = [ 200, 120, 100, 0.4 ]; // RGB with alpha
 var noise = new ClassicalNoise();
 var simlpex = new SimplexNoise();
+
 function Vec2f(x, y){
 	this.x = x; this.y = y;
 }
@@ -39,8 +40,8 @@ function onLoad() {
 
 	// gui
 	var gui = new dat.GUI();
-	gui.add(this, 'maxPoints', 3, 600);
-	gui.add(this, 'frameMod', 1.0, 8.0).step(1.0);
+	gui.add(this, 'maxPoints', 3, 2000);
+	gui.add(this, 'frameMod', 1.0, 10.0).step(1.0);
 	gui.addColor(this, 'colour');
 
 
@@ -129,9 +130,9 @@ function update() {
 
 		// sweet curves
 		xin = count;
-		yin = count;//currentdate.getSeconds() * 0.01;
-		maxNoise = canvas.height/4;
-		length = (canvas.height/3) + (simlpex.noise(xin, yin) * maxNoise);
+		yin = count;
+		maxNoise = canvas.height*0.2;
+		length = (canvas.height*0.3) + (simlpex.noise(xin, yin) * maxNoise);
 
 		// calculate position and push it
 		pos = getAngle(context, centre.x, centre.y, angle, length);
@@ -142,8 +143,8 @@ function update() {
 		// minutes
 		angle = minutessRatio*360;
 		angle -= 90;
-		maxNoise = canvas.height/3;
-		length = (canvas.height/3) + (simlpex.noise(count, count) * maxNoise);
+		maxNoise = canvas.height/5;
+		length = (canvas.height/3) + (simlpex.noise(count*angle, count) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
 		var clockPoint = new ClockPoint(pos, "M");
 		points.push(clockPoint);
@@ -152,8 +153,8 @@ function update() {
 		// hours
 		angle = hoursRatio*360;
 		angle -= 90;
-		maxNoise = canvas.height/5;
-		length = (canvas.height/5) + (simlpex.noise(count, count) * maxNoise);
+		maxNoise = canvas.height/10;
+		length = (canvas.height/5) + (simlpex.noise(count, angle) * maxNoise);
 		pos = getAngle(context, centre.x, centre.y, angle, length);
 		var clockPoint = new ClockPoint(pos, "H");
 		points.push(clockPoint);
@@ -185,8 +186,8 @@ function draw() {
 
 	// start x, y, radius; end x, y, radius
 	var grd = context.createRadialGradient(centre.x,centre.y,1,centre.x,centre.y,canvas.width*0.5);
-	grd.addColorStop(0,"#ffffff");
-	grd.addColorStop(1,"#ffffff");
+	grd.addColorStop(0,"#F7F7F7");
+	grd.addColorStop(1,"#bbbbbb");
 	context.fillStyle=grd;
 	context.fillRect(0,0,canvas.width,canvas.height);
 	
