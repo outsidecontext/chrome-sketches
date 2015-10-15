@@ -32,14 +32,14 @@ function init(canvasId, items) {
     canvasId = canvasId || "canvas";
     var canvas = document.getElementById(canvasId);
     var width = window.innerWidth;
-    var height = window.innerHeight * 0.8;
+    var height = window.innerHeight;
     renderer = new PIXI.autoDetectRenderer(width, height, {
         view: canvas,
         resolution: window.devicePixelRatio || 1,
         autoResize: true
     });
     PIXI.RESOLUTION = window.devicePixelRatio;
-    renderer.backgroundColor = 0xffffff;
+    renderer.backgroundColor = 0xF7F7F7;
     stage = new PIXI.Container();
     worldW = (renderer.view.width / PIXI.RESOLUTION) / 30;
     worldH = (renderer.view.height / PIXI.RESOLUTION) / 30;

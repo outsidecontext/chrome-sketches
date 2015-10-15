@@ -4,15 +4,22 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<title>utterance</title>
 	<link href="styles/style.css" media="screen" rel="stylesheet" type="text/css" />
+	<link href="styles/main.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body onload="onLoad();">
-
-	<h1>Utterance</h1>
-
+	<header class="header cf" role="banner">
+		<div class="content-row">
+			<h1 class="title">Utterance</h1>
+			<div class="menu">
+				a <a class="logo" href="http://chrismullany.com">Chris Mullany</a> web sketch
+			</div>
+		</div>
+	</header>
+	<!-- <main class="main" role="main"> -->
+	<!-- <div class="text"> -->
 	<div class="wrapper">
 		<canvas id="canvas"></canvas>
 	</div>
-
 	<div id="info">
 		<p id="info_start">Click anywhere to begin</p>
 		<p id="info_speak_now">Listening for utterances</p>
@@ -30,17 +37,15 @@
 				<p id="info_upgrade">Web Speech API is not supported by this browser.
 					Upgrade to <a href="//www.google.com/chrome">Chrome</a>
 				version 25 or later.</p>
-	</div>
-
-	<div id="results">
-		<span id="final_span" class="final"></span>
-		<span id="interim_span" class="interim"></span>
-	</div>
-
-	<script type="text/javascript" src="../lib/Box2dWeb-2.1.a.3.min.js"></script>
-	<script type="text/javascript" src="../lib/stats.min.js"></script>
-	<script type="text/javascript" src="../lib/pixi.js"></script>
-	<script type="text/javascript" src="js/app/box2d/Body.js"></script>
-	<script type="text/javascript" src="js/app/box2d/Scene.js"></script>
-	<script type="text/javascript" src="js/app/main.js"></script>
-</body>
+			</div>
+			<div id="results">
+				<span id="final_span" class="final"></span>
+				<span id="interim_span" class="interim"></span>
+			</div>
+			<script type="text/javascript" src="../lib/Box2dWeb-2.1.a.3.min.js"></script>
+			<script type="text/javascript" src="../lib/stats.min.js"></script>
+			<script type="text/javascript" src="../lib/pixi.js"></script>
+			<script type="text/javascript" src="js/app/box2d/Body.js"></script>
+			<script type="text/javascript" src="js/app/box2d/Scene.js"></script>
+			<script type="text/javascript" src="js/app/main.js"></script>
+		</body>

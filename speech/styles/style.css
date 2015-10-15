@@ -7,27 +7,13 @@ html, body {
 }
 
 canvas {
-    background-color: #ffffff;
+    position: absolute;
+    top: 0px;
+    z-index: -1;
+    /*background-color: #F7F7F7;*/
     margin: auto;
     display: block;
     width: 500px;
-}
-
-* {
-    font-family: Helvetica, sans-serif;
-}
-
-a:link {
-    color: #000;
-    text-decoration: none;
-}
-
-a:visited {
-    color: #000;
-}
-
-a:hover {
-    color: #33F;
 }
 
 .center {
@@ -63,35 +49,29 @@ a:hover {
     vertical-align: top;
 }
 
-#headline {
-    font-size: 40px;
-    font-weight: 300;
-}
-
-h1 {
-    color: #497D9D;
-    font-size: 26px;
-    text-align: center;
-    font-weight: normal;
-}
-
 #info {
-	padding: 12px;
-    font-size: 12px;
-    text-align: center;
-    color: #ffffff;
+    position: absolute;
+    right: 1em;
+    top: 4em;
+    padding: 0.5em;
+    text-align: right;
+    color: #555;
     visibility: hidden;
-    background-color: #72BC8D;
+    /*background-color: #fff;*/
+    max-width: 40%;
+}
+#info p {
+    font-size: 0.9em;
 }
 
 #results {
-	/*display: none;*/
-    font-size: 14px;
-    font-weight: bold;
-    border: 1px solid #ddd;
-    padding: 15px;
+    position: absolute;
+    top: 4em;
+    left: 1em;
+    padding: 0.5em;
     text-align: left;
-    min-height: 150px;
+    /*background-color: #fff;*/
+    max-width: 40%;
 }
 
 #start_button {
