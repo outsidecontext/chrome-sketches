@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Face Tracker</title>
+	</head>
+	<body>
+		<script src="../lib/clmtrackr/clmtrackr.min.js"></script>
+		<script src="../lib/clmtrackr/model_pca_20_svm.js"></script>
+		<canvas id="canvas" width="400" height="400"></canvas>
+		<canvas id="tracker" width="400" height="400"></canvas>
+		<script type="text/javascript">
+		var ctracker = new clm.tracker({stopOnConvergence : true});
+		ctracker.init(pModel);
+		var cc = document.getElementById('canvas').getContext('2d');
+		var img = new Image();
+		img.onload = function() {
+			var ratio = 400/img.width;
+			cc.drawImage(img,0,0,img.width*ratio, img.height*ratio);
+			ctracker.start(document.getElementById('canvas'));
+		};
+		img.src = '../common/assets/0.jpg';
+		var y1, y2, y;
+
+		// position loop
+		function positionLoop() {
+			requestAnimationFrame(positionLoop);
+			var positions = ctracker.getCurrentPosition();
+			if (positions) {
+				// 62 is tip of nose, 37 is top of lip
+				y1 = positions[62][1];
+				y2 = positions[37][1];
+				y = y2;//y1 + (y2 - y1) / 2;
+			}
+		}
+		positionLoop();
+
+		// tracked face draw loop
+		var canvasInput = document.getElementById('tracker');
+		var trackerContext = canvasInput.getContext('2d');
+		function drawLoop() {
+			requestAnimationFrame(drawLoop);
+			trackerContext.clearRect(0, 0, canvasInput.width, canvasInput.height);
+			ctracker.draw(canvasInput);
+		}
+		drawLoop();
+
+		document.addEventListener("clmtrackrConverged", function(event) {
+			console.log("Converged");
+			cc.beginPath();
+			cc.moveTo(0,y);
+			cc.lineTo(400,y);
+			cc.stroke();
+		}, false);
+		</script>
+	</body>
+</html>
