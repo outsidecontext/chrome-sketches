@@ -44,19 +44,19 @@ var Body = window.Body = function(world, details) {
             wordWrap: true,
             wordWrapWidth: 500
         };
-        this.graphicsLabel = new PIXI.Text(details.label || "X", style);
+        this.graphicsLabel = new PIXI.Text(details.label, style);
         this.graphicsLabel.anchor.x = 0.5;
-        this.graphicsLabel.anchor.y = 0.5;
+        this.graphicsLabel.anchor.y = 0.55;
         // bg
-        var w = this.graphicsLabel.width; //details.width*30;
-        var h = this.graphicsLabel.height * 0.5; //details.height*30
+        var w = this.graphicsLabel.width * .9;
+        var h = this.graphicsLabel.height * 0.5;
         this.bg = new PIXI.Graphics();
-        this.bg.beginFill(0xdddddd);
+        this.bg.beginFill(0xFF695C);
         this.bg.drawRect(-w / 2, -h / 2, w, h);
         this.bg.endFill;
         // add
         stage.addChild(this.graphics);
-        // this.graphics.addChild(this.bg);
+        if (this.drawBg) this.graphics.addChild(this.bg);
         this.graphics.addChild(this.graphicsLabel);
         // box2d shape
         details.width = w * WORLD_SCALE;

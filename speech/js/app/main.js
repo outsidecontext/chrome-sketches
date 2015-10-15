@@ -1,5 +1,7 @@
 
-var colours = ['#72BC8D', '#F75A53', '#497D9D'];
+//var colours = ['#72BC8D', '#F75A53', '#497D9D'];
+//var colours = ['#FF695C'];
+var colours = ['#555'];
 var words = ['talk to me'];
 var create_email = false;
 var final_transcript = '';
@@ -11,27 +13,7 @@ var weight = "normal";
 var size = "30px"
 
 function onLoad() {
-	var items = [];
-	// create some objects
-	var colour = '#F75A53'
-	// items.push({
-	// 	shape: "block",
-	// 	x: 50*WORLD_SCALE,
-	// 	y: 50*WORLD_SCALE,
-	// 	width: 50*WORLD_SCALE,
-	// 	height: 50*WORLD_SCALE,
-	// 	color: colour,
-	// 	restitution: getRndRestitution()
-	// });
-	// items.push({
-	// 	shape: "circle",
-	// 	x: 100*WORLD_SCALE,
-	// 	y: 50*WORLD_SCALE,
-	// 	radius: 25*WORLD_SCALE,
-	// 	color: colour,
-	// 	restitution: getRndRestitution()
-	// });
-	init("canvas", items);
+	init("canvas", []);
 	startButton();
 	var word = words[Math.floor(Math.random()*words.length)];
 	addPhrase(word);
@@ -61,7 +43,6 @@ function addPhrase(phrase) {
 	var words = phrase.split(' ');
 	for (var j = 0; j < words.length; j++) {
 		var word = words[j];
-		// console.log(word);
 		if (word) {
 			var colour = colours[Math.floor(Math.random()*colours.length)];
 			addDelayedWord(word, colour, 500*j);
@@ -233,5 +214,14 @@ function onMousePress(event) {
     startButton();
 }
 
+function onKeyDown(e) {
+    var key = String.fromCharCode(e.keyCode)
+	if (key == "T") {
+		addPhrase("Cellar Door");
+	};
+}
+
 window.addEventListener('mousedown', onMousePress, false);
 window.addEventListener('touchstart', onMousePress, false);
+window.addEventListener('keypress', onMousePress, false);
+window.addEventListener("keydown", onKeyDown, false);
