@@ -26,7 +26,7 @@ function setup() {
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200);
     camera.position.z = 50;
     renderer = new THREE.WebGLRenderer({
-        antialias: true
+        antialias: false
     });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setClearColor(0x000000);
@@ -214,6 +214,7 @@ function setOrientationControls(e) {
         controls.connect();
         element.addEventListener('click', fullscreen, false);
         window.removeEventListener('deviceorientation', setOrientationControls, true);
+        //renderer.antialias = false;
     } else {
         // setupGui();
     }
