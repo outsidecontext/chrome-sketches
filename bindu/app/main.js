@@ -11,9 +11,7 @@ var isMouseDown = false;
 var geometry;
 
 var rooms = [];
-// var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
 var lightProps = {intensity : 1, distance : 104.0, decay : 1.0};
-// var lightProps = {intensity: 1.3,distance: 150.0,decay: .6};
 var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
