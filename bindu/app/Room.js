@@ -12,13 +12,14 @@ var Room = window.Room = function(properties) {
     // CSG Test
     //shading: THREE.FlatShading
     // var roomMaterial = new THREE.MeshNormalMaterial();
-    var roomMaterial = new THREE.MeshPhongMaterial({color:0xffffff, overdraw: 0.5});
+    var roomMaterial = new THREE.MeshPhongMaterial({color:0xffffff, overdraw: 0.5, fog: true});
+
     
     var cubeGeometry = new THREE.CubeGeometry( 100, 100, 100, 1, 1, 1 );
     var cubeMesh = new THREE.Mesh( cubeGeometry );
     var cubeBSP = new ThreeBSP( cubeMesh );
 
-    var barGeometry = new THREE.CubeGeometry( 20, 120, 10, 1, 1, 1 );
+    var barGeometry = new THREE.CubeGeometry( 5, 120, 3, 1, 1, 1 );
     var barMesh = new THREE.Mesh( barGeometry );
     var barBSP = new ThreeBSP( barMesh );
         
@@ -73,9 +74,8 @@ var Room = window.Room = function(properties) {
 };
 
 Room.prototype.update = function() {
-    var speed = 0.3;
-    this.roomMesh.translateY(speed);
-    this.light.translateZ(speed);
+    this.roomMesh.translateY(this.speed);
+    this.light.translateZ(this.speed);
 };
 
 Room.prototype.getZ = function() {

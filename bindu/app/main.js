@@ -10,7 +10,10 @@ var isMouseDown = false;
 var geometry;
 
 var rooms = [];
-var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
+// var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
+var lightProps = {intensity : 1.3, distance : 150.0, decay : .6};
+var backZ = 0;
+var speed = 0.5;
 
 // TODO: wrap CSG and light, spawn and animate, kill when at certain z
 
@@ -19,14 +22,14 @@ var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
 /////////////////////////////////////////////////////////////////////////////
 function setup() {
     scene = new THREE.Scene();
-    //scene.fog = new THREE.FogExp2(0x000000, 0.01);
+    scene.fog = new THREE.FogExp2(0xF55DB3, 0.007);
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 100;
     renderer = new THREE.WebGLRenderer({
         antialias: false
     });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0x3A50C9);
+    renderer.setClearColor(0xF55DB3);
     renderer.setSize(window.innerWidth, window.innerHeight);
     element = renderer.domElement;
     container = document.getElementById('holder');
@@ -35,8 +38,7 @@ function setup() {
     // setup some rooms here
     for (var i = 0; i < 5; i++) {
         var props = {
-            position: new THREE.Vector3(0, 0, i*100),
-            z: -i*100
+            z: -i*120
         }
         var room = new Room(props);
         scene.add( room.roomMesh );
@@ -51,6 +53,7 @@ function setup() {
 function setupGui() {
     // gui
     var gui = new dat.GUI();
+    gui.add(this, 'speed', 0.0, 5.0).listen();
     gui.add(lightProps, 'intensity', 0, 10).listen();
     gui.add(lightProps, 'distance', 0, 200).listen();
     gui.add(lightProps, 'decay', 0.0, 1.0).listen();
@@ -72,15 +75,21 @@ function update() {
     // light.intensity = lightProps.intensity;
     // light.distance = lightProps.distance;
     // light.decay = lightProps.decay;
-
+    backZ = 999;
     for (var i = 0; i < rooms.length; i++) {
         var room = rooms[i];
-        room.update();
+        room.speed = speed;
         room.light.intensity = lightProps.intensity;
         room.light.distance = lightProps.distance;
         room.light.decay = lightProps.decay;
-        if (room.getZ() > 200) {
-            room.reset(-300)
+        room.update();
+        if (room.getZ() < backZ) backZ = room.getZ();
+    }
+
+    for (var i = 0; i < rooms.length; i++) {
+        var room = rooms[i];
+        if (room.getZ() > 360) {
+            room.reset(backZ-120)
         }
     };
 }
