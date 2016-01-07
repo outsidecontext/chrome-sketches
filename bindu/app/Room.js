@@ -12,18 +12,22 @@ var Room = window.Room = function(properties) {
     // CSG Test
     //shading: THREE.FlatShading
     // var roomMaterial = new THREE.MeshNormalMaterial();
-    var roomMaterial = new THREE.MeshPhongMaterial({color:0xffffff, fog: true});
+    var colours = [ 0xF55DB3, 0x7B23AD, 0x3A50C9, 0xF7E51B, 0xFA980F ];
+    var colour = colours[Math.floor(Math.random() * colours.length)]
+    var roomMaterial = new THREE.MeshPhongMaterial({color:colour, fog: true});
 
     
     // var cubeGeometry = new THREE.CubeGeometry( 100, 100, 100, 1, 1, 1 );
     // var cubeMesh = new THREE.Mesh( cubeGeometry );
     // var cubeBSP = new ThreeBSP( cubeMesh );
 
-    var barGeometry = new THREE.CubeGeometry( 30, 120, 15, 1, 1, 1 );
+    var w = randomInRange(10, 20);
+    var h = randomInRange(10, 20);
+    var barGeometry = new THREE.CubeGeometry( w, 120, h, 1, 1, 1 );
     var barMesh = new THREE.Mesh( barGeometry );
     var barBSP = new ThreeBSP( barMesh );
         
-    var sphereGeometry = new THREE.SphereGeometry( 60, 16, 16 );
+    var sphereGeometry = new THREE.CylinderGeometry( 32, 32, 120, 32 );
     var sphereMesh = new THREE.Mesh( sphereGeometry );
     var sphereBSP = new ThreeBSP( sphereMesh );
 
@@ -62,9 +66,7 @@ var Room = window.Room = function(properties) {
 
 
     // LIGHT
-    var colours = [ 0xF55DB3, 0x7B23AD, 0x3A50C9, 0xF7E51B, 0xFA980F ];
-    var colour = colours[Math.floor(Math.random() * colours.length)]
-    this.light = new THREE.PointLight(colour, 2, 200);
+    this.light = new THREE.PointLight(0xffffff, 2, 200);
     // this.light.position = this.properties.position;
     this.light.position.set( 0, 0, this.properties.z );
     //scene.add(light);

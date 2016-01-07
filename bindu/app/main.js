@@ -4,6 +4,7 @@
 // Threejs scene and renderer
 var scene, camera, renderer, effect, controls;
 var element, container;
+var stats;
 var isCardboard;
 
 var isMouseDown = false;
@@ -11,14 +12,11 @@ var geometry;
 
 var rooms = [];
 // var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
-var lightProps = {
-    intensity: 1.3,
-    distance: 150.0,
-    decay: .6
-};
+var lightProps = {intensity : 1.5, distance : 69.0, decay : 1.0};
+// var lightProps = {intensity: 1.3,distance: 150.0,decay: .6};
 var backZ = 0;
 var speed = 0.5;
-var spacer = 117;
+var spacer = 120.2;
 
 // TODO: wrap CSG and light, spawn and animate, kill when at certain z
 
@@ -28,6 +26,7 @@ var spacer = 117;
 function setup() {
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0xF55DB3, 0.007);
+    // scene.fog = new THREE.Fog(0xF55DB3, 0, 500);
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 60;
     renderer = new THREE.WebGLRenderer({
@@ -41,7 +40,7 @@ function setup() {
     container.appendChild(renderer.domElement);
 
     // setup some rooms here
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 4; i++) {
         var props = {
             z: -i * spacer
         }
@@ -50,6 +49,9 @@ function setup() {
         scene.add(room.light);
         rooms.push(room);
     };
+
+    var light = new THREE.AmbientLight( 0x888888 ); // soft white light
+    scene.add( light );
 
     // Rounded rectangle
     var extrudeSettings = { amount: 120, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
@@ -69,6 +71,8 @@ function setup() {
     })(roundedRectShape, 0, 0, 50, 50, 20);
     // addShape( roundedRectShape, extrudeSettings, 0x008000, 0,  0, 0, 0, 0, 0, 0.1 );
 
+    stats = new Stats();
+    container.appendChild( stats.domElement );
     setupGui();
     render();
 }
@@ -111,10 +115,11 @@ function update() {
 
     for (var i = 0; i < rooms.length; i++) {
         var room = rooms[i];
-        if (room.getZ() > 360) {
+        if (room.getZ() > spacer) {
             room.reset(backZ - spacer)
         }
     };
+    stats.update();
 }
 
 function render() {
