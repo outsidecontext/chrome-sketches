@@ -12,30 +12,28 @@ var Room = window.Room = function(properties) {
     // CSG Test
     //shading: THREE.FlatShading
     // var roomMaterial = new THREE.MeshNormalMaterial();
-    var roomMaterial = new THREE.MeshPhongMaterial({color:0xffffff, overdraw: 0.5, fog: true});
+    var roomMaterial = new THREE.MeshPhongMaterial({color:0xffffff, fog: true});
 
     
-    var cubeGeometry = new THREE.CubeGeometry( 100, 100, 100, 1, 1, 1 );
-    var cubeMesh = new THREE.Mesh( cubeGeometry );
-    var cubeBSP = new ThreeBSP( cubeMesh );
+    // var cubeGeometry = new THREE.CubeGeometry( 100, 100, 100, 1, 1, 1 );
+    // var cubeMesh = new THREE.Mesh( cubeGeometry );
+    // var cubeBSP = new ThreeBSP( cubeMesh );
 
-    var barGeometry = new THREE.CubeGeometry( 5, 120, 3, 1, 1, 1 );
+    var barGeometry = new THREE.CubeGeometry( 30, 120, 15, 1, 1, 1 );
     var barMesh = new THREE.Mesh( barGeometry );
     var barBSP = new ThreeBSP( barMesh );
         
-    var sphereGeometry = new THREE.SphereGeometry( 60, 32, 32 );
+    var sphereGeometry = new THREE.SphereGeometry( 60, 16, 16 );
     var sphereMesh = new THREE.Mesh( sphereGeometry );
     var sphereBSP = new ThreeBSP( sphereMesh );
 
-    //
-    var cylinderGeometry = new THREE.CylinderGeometry( 16, 16, 120, 32 );
-    var cylinderMesh = new THREE.Mesh( cylinderGeometry );
-    var cylinderBSP = new ThreeBSP( cylinderMesh );
+    // var cylinderGeometry = new THREE.CylinderGeometry( 2, 2, 120, 32 );
+    // var cylinderMesh = new THREE.Mesh( cylinderGeometry );
+    // var cylinderBSP = new ThreeBSP( cylinderMesh );
     
     // Example #1 - Cube subtract Sphere
-    // var newBSP = cubeBSP.subtract( cylinderBSP );
-    // var newBSP = sphereBSP.subtract( cylinderBSP );
     var newBSP = sphereBSP.subtract( barBSP );
+    // var newBSP = sphereBSP.subtract( cylinderBSP );
 
     this.roomMesh = newBSP.toMesh( roomMaterial );
     // this.roomMesh.position = this.properties.position;
