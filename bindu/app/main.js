@@ -11,7 +11,7 @@ var isMouseDown = false;
 var geometry;
 
 var rooms = [];
-var lightProps = {intensity : 1, distance : 104.0, decay : 1.0};
+var lightProps = {intensity : 0.7, distance : 104.0, decay : 0.9};
 var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
@@ -23,11 +23,17 @@ var spacer = roomDepth + 0.2;
 // particles
 /////////////////////////////////////////////////////////////////////////////
 function setup() {
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 60;
+}
+
+function setupScene() {
+    
     scene = new THREE.Scene();
     //scene.fog = new THREE.FogExp2(0xF55DB3, 0.003);
     scene.fog = new THREE.Fog(0xF55DB3, 0, roomDepth*2);
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 60;
+
     renderer = new THREE.WebGLRenderer({
         antialias: false
     });
@@ -37,6 +43,16 @@ function setup() {
     element = renderer.domElement;
     container = document.getElementById('holder');
     container.appendChild(renderer.domElement);
+
+    if (isCardboard) {
+        effect = new THREE.StereoEffect(renderer);
+        effect.eyeSeparation = 0;
+        effect.setSize(window.innerWidth, window.innerHeight);
+        element.addEventListener('click', fullscreen, false);
+    }
+    else {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+    }
 
     // setup some rooms here
     for (var i = 0; i < 3; i++) {
@@ -175,20 +191,11 @@ function onKeyPress(event) {
 function setOrientationControls(e) {
     isCardboard = e.alpha;
     if (isCardboard) {
-        // cardboard
-        effect = new THREE.StereoEffect(renderer);
-        effect.eyeSeparation = 0;
-        effect.setSize(window.innerWidth, window.innerHeight);
-        controls = new THREE.DeviceOrientationControls(camera, true);
-        controls.connect();
-        element.addEventListener('click', fullscreen, false);
+        console.log("using DeviceOrientationControls");
+        controls = new THREE.DeviceOrientationControls(camera);
         window.removeEventListener('deviceorientation', setOrientationControls, true);
-        //renderer.antialias = false;
-    } else {
-        // setupGui();
-        // CONTROLS
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
     }
+    setupScene();
 }
 
 function onWindowResize() {
@@ -203,7 +210,8 @@ window.addEventListener('mouseup', onMouseRelease, false);
 window.addEventListener('touchstart', onMousePress, false);
 window.addEventListener('touchend', onMouseRelease, false);
 window.addEventListener('keyup', onKeyPress, false);
-// carboard
+
+// carboard/mobiled device events
 window.addEventListener('deviceorientation', setOrientationControls, true);
 window.addEventListener('resize', onWindowResize, false);
 
