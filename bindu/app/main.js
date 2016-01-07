@@ -53,7 +53,7 @@ function setupScene() {
     }
 
     // setup some rooms here
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 3; i++) {
         var props = {
             z: -i * spacer,
             depth : roomDepth
