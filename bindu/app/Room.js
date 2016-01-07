@@ -23,11 +23,11 @@ var Room = window.Room = function(properties) {
 
     var w = randomInRange(10, 20);
     var h = randomInRange(10, 20);
-    var barGeometry = new THREE.CubeGeometry( w, 120, h, 1, 1, 1 );
+    var barGeometry = new THREE.CubeGeometry( w, this.properties.depth, h, 1, 1, 1 );
     var barMesh = new THREE.Mesh( barGeometry );
     var barBSP = new ThreeBSP( barMesh );
         
-    var sphereGeometry = new THREE.CylinderGeometry( 32, 32, 120, 32 );
+    var sphereGeometry = new THREE.CylinderGeometry( 32, 32, this.properties.depth, 32 );
     var sphereMesh = new THREE.Mesh( sphereGeometry );
     var sphereBSP = new ThreeBSP( sphereMesh );
 
@@ -88,5 +88,5 @@ Room.prototype.reset = function(z) {
 };
 
 Room.prototype.propertiesDefault = {
-    position : new THREE.Vector3( 0,0,0 )
+    z : 0
 }

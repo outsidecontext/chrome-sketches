@@ -12,11 +12,12 @@ var geometry;
 
 var rooms = [];
 // var lightProps = {intensity : 1.5, distance : 200.0, decay : 1.0};
-var lightProps = {intensity : 1.5, distance : 69.0, decay : 1.0};
+var lightProps = {intensity : 1, distance : 104.0, decay : 1.0};
 // var lightProps = {intensity: 1.3,distance: 150.0,decay: .6};
 var backZ = 0;
 var speed = 0.5;
-var spacer = 120.2;
+var roomDepth = 200;
+var spacer = roomDepth + 0.2;
 
 // TODO: wrap CSG and light, spawn and animate, kill when at certain z
 
@@ -25,8 +26,8 @@ var spacer = 120.2;
 /////////////////////////////////////////////////////////////////////////////
 function setup() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xF55DB3, 0.007);
-    // scene.fog = new THREE.Fog(0xF55DB3, 0, 500);
+    //scene.fog = new THREE.FogExp2(0xF55DB3, 0.003);
+    scene.fog = new THREE.Fog(0xF55DB3, 0, roomDepth*2);
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 60;
     renderer = new THREE.WebGLRenderer({
@@ -40,9 +41,10 @@ function setup() {
     container.appendChild(renderer.domElement);
 
     // setup some rooms here
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 3; i++) {
         var props = {
-            z: -i * spacer
+            z: -i * spacer,
+            depth : roomDepth
         }
         var room = new Room(props);
         scene.add(room.roomMesh);
@@ -115,7 +117,7 @@ function update() {
 
     for (var i = 0; i < rooms.length; i++) {
         var room = rooms[i];
-        if (room.getZ() > spacer) {
+        if (room.getZ() > spacer + 60) {
             room.reset(backZ - spacer)
         }
     };
