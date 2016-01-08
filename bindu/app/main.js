@@ -15,6 +15,8 @@ var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
 var spacer = roomDepth + 0.2;
+var speedPresets = [0.3, 0.5, 0.7, 1.3, 2.6, 4, 5];
+var speedPresetsI = 0;
 
 // lights
 var lightProps = {
@@ -47,14 +49,6 @@ function setup() {
     // which in turn calls setupScene()
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-    // mouse and key listeners
-    window.addEventListener('mousemove', onMouseMove, false);
-    window.addEventListener('mousedown', onMousePress, false);
-    window.addEventListener('mouseup', onMouseRelease, false);
-    window.addEventListener('touchstart', onMousePress, false);
-    window.addEventListener('touchend', onMouseRelease, false);
-    window.addEventListener('keyup', onKeyPress, false);
-
     // carboard/mobile device events
     window.addEventListener('deviceorientation', setOrientationControls, true);
     window.addEventListener('resize', onWindowResize, false);
@@ -77,13 +71,16 @@ function setupScene() {
     container = document.getElementById('holder');
     container.appendChild(renderer.domElement);
 
-    // setup differently for cardboard vr
+    // setup differently for cardboard vr and desktop
     // assuming device orientation support = cardboard
     if (isCardboard) {
         effect = new THREE.StereoEffect(renderer);
         effect.eyeSeparation = 0;
         effect.setSize(window.innerWidth, window.innerHeight);
         element.addEventListener('click', fullscreen, false);
+        // touch listeners, triggered by cardboard v2's button
+        window.addEventListener('touchstart', onMousePress, false);
+        window.addEventListener('touchend', onMouseRelease, false);
     } else {
         pitchObject = new THREE.Object3D();
         pitchObject.add(camera);
@@ -91,6 +88,11 @@ function setupScene() {
         yawObject.add(pitchObject);
         scene.add(yawObject);
         setupGui();
+        // mouse and key listeners for desktop
+        window.addEventListener('mousemove', onMouseMove, false);
+        window.addEventListener('mousedown', onMousePress, false);
+        window.addEventListener('mouseup', onMouseRelease, false);
+        window.addEventListener('keyup', onKeyPress, false);
     }
 
     // setup some rooms here
@@ -214,6 +216,9 @@ function onMousePress(event) {
 
 function onMouseRelease(event) {
     isMouseDown = false;
+    console.log(speedPresetsI);
+    if (++speedPresetsI > speedPresets.length - 1) speedPresetsI = 0;
+    speed = speedPresets[speedPresetsI];
 }
 
 function onKeyPress(event) {}
