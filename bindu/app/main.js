@@ -11,25 +11,34 @@ var isMouseDown = false;
 var geometry;
 
 var rooms = [];
-var lightProps = {intensity : 0.43, distance : 260.0, decay : 1.0};
+var lightProps = {
+    intensity: 0.3,
+    distance: 100.0,
+    decay: 1.0
+};
 var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
 var spacer = roomDepth + 0.2;
+
+var pitchObject;
+var yawObject;
+var PI_2 = Math.PI / 2;
+var camRotXTarget = 0;
+var camRotYTarget = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 // particles
 /////////////////////////////////////////////////////////////////////////////
 function setup() {
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 60;
 }
 
 function setupScene() {
 
     scene = new THREE.Scene();
     //scene.fog = new THREE.FogExp2(0xF55DB3, 0.003);
-    scene.fog = new THREE.Fog(0xF55DB3, 0, roomDepth*2);
+    scene.fog = new THREE.Fog(0xF55DB3, 0, roomDepth * 2);
 
     renderer = new THREE.WebGLRenderer({
         antialias: false
@@ -47,29 +56,35 @@ function setupScene() {
         effect.eyeSeparation = 0;
         effect.setSize(window.innerWidth, window.innerHeight);
         element.addEventListener('click', fullscreen, false);
-    }
-    else {
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+    } else {
+        pitchObject = new THREE.Object3D();
+        pitchObject.add(camera);
+        yawObject = new THREE.Object3D();
+        yawObject.add(pitchObject);
+        scene.add( yawObject );
     }
 
     // setup some rooms here
     for (var i = 0; i < 3; i++) {
         var props = {
             z: -i * spacer,
-            depth : roomDepth
+            depth: roomDepth
         }
         var room = new Room(props);
+        room.light.intensity = lightProps.intensity;
+        room.light.distance = lightProps.distance;
+        room.light.decay = lightProps.decay;
         scene.add(room.roomMesh);
         scene.add(room.light);
         rooms.push(room);
     };
 
-    var light = new THREE.AmbientLight( 0xdddddd ); // soft white light
-    scene.add( light );
+    var light = new THREE.AmbientLight(0xdddddd); // soft white light
+    scene.add(light);
 
     stats = new Stats();
-    container.appendChild( stats.domElement );
-    setupGui();
+    // container.appendChild( stats.domElement );
+    // setupGui();
     render();
 }
 
@@ -79,10 +94,16 @@ function setupGui() {
     gui.add(this, 'speed', 0.0, 5.0).listen();
     gui.add(lightProps, 'intensity', 0, 4).listen();
     gui.add(lightProps, 'distance', 0, 400).listen();
-    gui.add(lightProps, 'decay', 0.0, 1.0).listen();
+    gui.add(lightProps, 'decay', 0.0, 1.0).listen().onChange(function(e) {
+        // update rooms decay
+    });
 }
 
 function update() {
+    if (!isCardboard) {
+        yawObject.rotation.y += (camRotYTarget - yawObject.rotation.y) * 0.04;
+        pitchObject.rotation.x += (camRotXTarget - pitchObject.rotation.x) * 0.04;
+    }
 
     backZ = 999;
     for (var i = 0; i < rooms.length; i++) {
@@ -97,7 +118,7 @@ function update() {
 
     for (var i = 0; i < rooms.length; i++) {
         var room = rooms[i];
-        if (room.getZ() > spacer*2) {
+        if (room.getZ() > spacer * 1.5) {
             room.reset(backZ - spacer);
         }
     };
@@ -110,14 +131,18 @@ function render() {
     update();
     if (isCardboard) {
         controls.update();
-        //renderer.render(scene, camera);
         effect.render(scene, camera);
     } else {
         renderer.render(scene, camera);
     }
 }
 
-function onMouseMove(event) {}
+function onMouseMove(event) {
+    if (!isCardboard) {
+        camRotXTarget = ((window.innerHeight/2) - event.pageY) * 0.001;
+        camRotYTarget = ((window.innerWidth/2) - event.pageX) * 0.001;
+    }
+}
 
 function onMousePress(event) {
     isMouseDown = true;
@@ -127,8 +152,7 @@ function onMouseRelease(event) {
     isMouseDown = false;
 }
 
-function onKeyPress(event) {
-}
+function onKeyPress(event) {}
 
 function setOrientationControls(e) {
     isCardboard = e.alpha;
