@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // variables
 /////////////////////////////////////////////////////////////////////////////
+
 // Threejs scene and renderer
 var scene, camera, renderer, effect, controls;
 var element, container;
@@ -8,23 +9,24 @@ var stats;
 var isCardboard;
 var isMouseDown = false;
 
+// rooms
 var rooms = [];
-var lightProps = {
-    intensity: 0.3,
-    distance: 100.0,
-    decay: 1.0,
-    shininess : 30,
-    zOffset : 0
-};
-
-var ambientLight;
-var ambientLightColour = "#dddddd";
-var fogColour = "#F55DB3";
-
 var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
 var spacer = roomDepth + 0.2;
+
+// lights
+var lightProps = {
+    intensity: 0.3,
+    distance: 100.0,
+    decay: 1.0,
+    shininess: 30,
+    zOffset: 0
+};
+var ambientLight;
+var ambientLightColour = "#dddddd";
+var fogColour = "#F55DB3";
 
 // desktop camera control
 var pitchObject;
@@ -34,30 +36,50 @@ var camRotXTarget = 0;
 var camRotYTarget = 0;
 var isMouseControl = false;
 
+
 ///////////////////////////////////////////////////////////////////////////////
-// particles
+// core functions
 /////////////////////////////////////////////////////////////////////////////
+
 function setup() {
+    // just setup camera initially
+    // this is used by setOrientationControls()
+    // which in turn calls setupScene()
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    // mouse and key listeners
+    window.addEventListener('mousemove', onMouseMove, false);
+    window.addEventListener('mousedown', onMousePress, false);
+    window.addEventListener('mouseup', onMouseRelease, false);
+    window.addEventListener('touchstart', onMousePress, false);
+    window.addEventListener('touchend', onMouseRelease, false);
+    window.addEventListener('keyup', onKeyPress, false);
+
+    // carboard/mobile device events
+    window.addEventListener('deviceorientation', setOrientationControls, true);
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 function setupScene() {
 
+    // scene with fog
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(fogColour, 0, roomDepth * 2);
 
+    // clear colour is same as fog, supports retina displays
     renderer = new THREE.WebGLRenderer({
         antialias: false
     });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0xF55DB3);
+    renderer.setClearColor(fogColour);
     renderer.setSize(window.innerWidth, window.innerHeight);
     element = renderer.domElement;
     container = document.getElementById('holder');
     container.appendChild(renderer.domElement);
 
+    // setup differently for cardboard vr
+    // assuming device orientation support = cardboard
     if (isCardboard) {
-        console.log(controls);
         effect = new THREE.StereoEffect(renderer);
         effect.eyeSeparation = 0;
         effect.setSize(window.innerWidth, window.innerHeight);
@@ -67,10 +89,13 @@ function setupScene() {
         pitchObject.add(camera);
         yawObject = new THREE.Object3D();
         yawObject.add(pitchObject);
-        scene.add( yawObject );
+        scene.add(yawObject);
+        setupGui();
     }
 
     // setup some rooms here
+    // a room is a hollow space with an aperture at either end
+    // and a point light
     for (var i = 0; i < 3; i++) {
         var props = {
             z: -i * spacer,
@@ -87,40 +112,16 @@ function setupScene() {
         rooms.push(room);
     };
 
-    ambientLight = new THREE.AmbientLight(ambientLightColour); // soft white light
+    // ambient light in case we want to avoid black areas
+    ambientLight = new THREE.AmbientLight(ambientLightColour);
     scene.add(ambientLight);
 
+    // stats?
     stats = new Stats();
     // container.appendChild( stats.domElement );
-    setupGui();
+
+    // start render loop
     render();
-}
-
-function setupGui() {
-    // gui
-    var gui = new dat.GUI();
-    gui.add(this, 'isMouseControl').onChange(function(e) {
-        if (!isMouseControl) {
-            camRotXTarget = 0;
-            camRotYTarget = 0;
-        };
-    });
-    gui.add(this, 'speed', 0.0, 5.0).listen();
-    gui.addColor(this, 'fogColour').onChange(function(e){
-        scene.fog.color = new THREE.Color(fogColour);
-        renderer.setClearColor(fogColour);
-    });
-
-    var guiLighting = gui.addFolder('Lighting');
-    guiLighting.add(lightProps, 'intensity', 0, 4).listen();
-    guiLighting.add(lightProps, 'distance', 0, 400).listen();
-    guiLighting.add(lightProps, 'decay', 0.0, 1.0).listen();
-    guiLighting.add(lightProps, 'shininess', 0.0, 120.0).listen();
-    guiLighting.add(lightProps, 'zOffset', 0.0, 120.0).listen();
-    guiLighting.addColor(this, 'ambientLightColour').onChange(function(e){
-        ambientLight.color = new THREE.Color(ambientLightColour);
-    });
-
 }
 
 function update() {
@@ -163,10 +164,47 @@ function render() {
     }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+// GUI setup
+/////////////////////////////////////////////////////////////////////////////
+
+function setupGui() {
+
+    var gui = new dat.GUI();
+    gui.add(this, 'isMouseControl').onChange(function(e) {
+        if (!isMouseControl) {
+            camRotXTarget = 0;
+            camRotYTarget = 0;
+        };
+    });
+    gui.add(this, 'speed', 0.0, 5.0).listen();
+    gui.addColor(this, 'fogColour').onChange(function(e) {
+        scene.fog.color = new THREE.Color(fogColour);
+        renderer.setClearColor(fogColour);
+    });
+
+    var guiLighting = gui.addFolder('Lighting');
+    guiLighting.add(lightProps, 'intensity', 0, 4).listen();
+    guiLighting.add(lightProps, 'distance', 0, 400).listen();
+    guiLighting.add(lightProps, 'decay', 0.0, 1.0).listen();
+    guiLighting.add(lightProps, 'shininess', 0.0, 120.0).listen();
+    guiLighting.add(lightProps, 'zOffset', 0.0, 120.0).listen();
+    guiLighting.addColor(this, 'ambientLightColour').onChange(function(e) {
+        ambientLight.color = new THREE.Color(ambientLightColour);
+    });
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// listeners
+/////////////////////////////////////////////////////////////////////////////
+
 function onMouseMove(event) {
     if (!isCardboard && isMouseControl) {
-        camRotXTarget = ((window.innerHeight/2) - event.pageY) * 0.001;
-        camRotYTarget = ((window.innerWidth/2) - event.pageX) * 0.001;
+        camRotXTarget = ((window.innerHeight / 2) - event.pageY) * 0.001;
+        camRotYTarget = ((window.innerWidth / 2) - event.pageX) * 0.001;
     }
 }
 
@@ -195,18 +233,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     if (effect) effect.setSize(window.innerWidth, window.innerHeight);
 }
-
-window.addEventListener('mousemove', onMouseMove, false);
-window.addEventListener('mousedown', onMousePress, false);
-window.addEventListener('mouseup', onMouseRelease, false);
-window.addEventListener('touchstart', onMousePress, false);
-window.addEventListener('touchend', onMouseRelease, false);
-window.addEventListener('keyup', onKeyPress, false);
-
-// carboard/mobiled device events
-window.addEventListener('deviceorientation', setOrientationControls, true);
-window.addEventListener('resize', onWindowResize, false);
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
