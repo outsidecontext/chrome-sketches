@@ -6,9 +6,10 @@
 var Room = window.Room = function(properties) {
 
     this.properties = properties || this.propertiesDefault;
-    this.colours = [ 0xF55DB3, 0x7B23AD, 0x3A50C9, 0xF7E51B, 0xFA980F ];
+    //, 0xF7E51B
+    this.colours = [ 0xF55DB3, 0x7B23AD, 0x3A50C9, 0xFA980F, 0xFF9A1E, 0xFD651A, 0x7AA9FC ];
     var colour = this.colours[Math.floor(Math.random() * this.colours.length)];
-    var roomMaterial = new THREE.MeshPhongMaterial({color:colour, fog: true, shininess: 0});
+    var roomMaterial = new THREE.MeshPhongMaterial({color:colour, fog: true, shininess: 80});
 
     
     var cubeGeometry = new THREE.BoxGeometry( 100, this.properties.depth, 100, 1, 1, 1 );
@@ -57,8 +58,7 @@ var Room = window.Room = function(properties) {
 
     // LIGHT
     this.light = new THREE.PointLight(0xffffff, 2, 200);
-    // this.light.position.set( 0, 0, this.properties.z - (this.properties.depth/2) + 20 );
-    this.light.position.set( 0, 0, this.properties.z);
+    this.light.position.set( 0, 0, this.properties.z );
 
 };
 
@@ -73,10 +73,8 @@ Room.prototype.getZ = function() {
 
 Room.prototype.reset = function(z) {
     this.roomMesh.position.set( 0, 0, z );
-    // this.light.position.set( 0, 0, z - randomInRange(0, (this.properties.depth/2) + 2));
-    this.light.position.set( 0, 0, z);
-    this.light.intensity = randomInRange(0.1, 0.6);
-
+    this.light.position.set( 0, 0, z - this.lightZOffset);
+    // this.light.intensity = randomInRange(0.1, 0.6);
     var colour = this.colours[Math.floor(Math.random() * this.colours.length)];
     this.roomMesh.material.color.setHex(colour);
 };

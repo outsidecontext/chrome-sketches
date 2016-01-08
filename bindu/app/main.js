@@ -6,26 +6,33 @@ var scene, camera, renderer, effect, controls;
 var element, container;
 var stats;
 var isCardboard;
-
 var isMouseDown = false;
-var geometry;
 
 var rooms = [];
 var lightProps = {
     intensity: 0.3,
     distance: 100.0,
-    decay: 1.0
+    decay: 1.0,
+    shininess : 30,
+    zOffset : 0
 };
+
+var ambientLight;
+var ambientLightColour = "#dddddd";
+var fogColour = "#F55DB3";
+
 var backZ = 0;
 var speed = 0.5;
 var roomDepth = 200;
 var spacer = roomDepth + 0.2;
 
+// desktop camera control
 var pitchObject;
 var yawObject;
 var PI_2 = Math.PI / 2;
 var camRotXTarget = 0;
 var camRotYTarget = 0;
+var isMouseControl = false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // particles
@@ -37,8 +44,7 @@ function setup() {
 function setupScene() {
 
     scene = new THREE.Scene();
-    //scene.fog = new THREE.FogExp2(0xF55DB3, 0.003);
-    scene.fog = new THREE.Fog(0xF55DB3, 0, roomDepth * 2);
+    scene.fog = new THREE.Fog(fogColour, 0, roomDepth * 2);
 
     renderer = new THREE.WebGLRenderer({
         antialias: false
@@ -74,29 +80,47 @@ function setupScene() {
         room.light.intensity = lightProps.intensity;
         room.light.distance = lightProps.distance;
         room.light.decay = lightProps.decay;
+        room.roomMesh.material.shininess = lightProps.shininess;
+        room.lightZOffset = lightProps.zOffset
         scene.add(room.roomMesh);
         scene.add(room.light);
         rooms.push(room);
     };
 
-    var light = new THREE.AmbientLight(0xdddddd); // soft white light
-    scene.add(light);
+    ambientLight = new THREE.AmbientLight(ambientLightColour); // soft white light
+    scene.add(ambientLight);
 
     stats = new Stats();
     // container.appendChild( stats.domElement );
-    // setupGui();
+    setupGui();
     render();
 }
 
 function setupGui() {
     // gui
     var gui = new dat.GUI();
-    gui.add(this, 'speed', 0.0, 5.0).listen();
-    gui.add(lightProps, 'intensity', 0, 4).listen();
-    gui.add(lightProps, 'distance', 0, 400).listen();
-    gui.add(lightProps, 'decay', 0.0, 1.0).listen().onChange(function(e) {
-        // update rooms decay
+    gui.add(this, 'isMouseControl').onChange(function(e) {
+        if (!isMouseControl) {
+            camRotXTarget = 0;
+            camRotYTarget = 0;
+        };
     });
+    gui.add(this, 'speed', 0.0, 5.0).listen();
+    gui.addColor(this, 'fogColour').onChange(function(e){
+        scene.fog.color = new THREE.Color(fogColour);
+        renderer.setClearColor(fogColour);
+    });
+
+    var guiLighting = gui.addFolder('Lighting');
+    guiLighting.add(lightProps, 'intensity', 0, 4).listen();
+    guiLighting.add(lightProps, 'distance', 0, 400).listen();
+    guiLighting.add(lightProps, 'decay', 0.0, 1.0).listen();
+    guiLighting.add(lightProps, 'shininess', 0.0, 120.0).listen();
+    guiLighting.add(lightProps, 'zOffset', 0.0, 120.0).listen();
+    guiLighting.addColor(this, 'ambientLightColour').onChange(function(e){
+        ambientLight.color = new THREE.Color(ambientLightColour);
+    });
+
 }
 
 function update() {
@@ -112,6 +136,8 @@ function update() {
         room.light.intensity = lightProps.intensity;
         room.light.distance = lightProps.distance;
         room.light.decay = lightProps.decay;
+        room.roomMesh.material.shininess = lightProps.shininess;
+        room.lightZOffset = lightProps.zOffset;
         room.update();
         if (room.getZ() < backZ) backZ = room.getZ();
     }
@@ -138,7 +164,7 @@ function render() {
 }
 
 function onMouseMove(event) {
-    if (!isCardboard) {
+    if (!isCardboard && isMouseControl) {
         camRotXTarget = ((window.innerHeight/2) - event.pageY) * 0.001;
         camRotYTarget = ((window.innerWidth/2) - event.pageX) * 0.001;
     }
