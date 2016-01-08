@@ -6,9 +6,7 @@
 var Room = window.Room = function(properties) {
 
     this.properties = properties || this.propertiesDefault;
-    //, 0xF7E51B
-    this.colours = [ 0xF55DB3, 0x7B23AD, 0x3A50C9, 0xFA980F, 0xFF9A1E, 0xFD651A, 0x7AA9FC ];
-    var colour = this.colours[Math.floor(Math.random() * this.colours.length)];
+    var colour = COLOURS[Math.floor(Math.random() * COLOURS.length)];
     var roomMaterial = new THREE.MeshPhongMaterial({color:colour, fog: true, shininess: 80});
 
     
@@ -75,7 +73,7 @@ Room.prototype.reset = function(z) {
     this.roomMesh.position.set( 0, 0, z );
     this.light.position.set( 0, 0, z - this.lightZOffset);
     // this.light.intensity = randomInRange(0.1, 0.6);
-    var colour = this.colours[Math.floor(Math.random() * this.colours.length)];
+    var colour = COLOURS[Math.floor(Math.random() * COLOURS.length)];
     this.roomMesh.material.color.setHex(colour);
 };
 

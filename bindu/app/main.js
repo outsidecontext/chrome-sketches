@@ -8,6 +8,7 @@ var element, container;
 var stats;
 var isCardboard;
 var isMouseDown = false;
+var startTime = new Date();
 
 // rooms
 var rooms = [];
@@ -29,6 +30,10 @@ var lightProps = {
 var ambientLight;
 var ambientLightColour = "#dddddd";
 var fogColour = "#F55DB3";
+var COLOURS = [0xF55DB3, 0x7B23AD, 0x3A50C9, 0xFA980F, 0xFF9A1E, 0xFD651A, 0x7AA9FC];
+var FOG_COLOURS = [0xF55DB3, 0xe17bb4, 0x6789c8, 0xd7d67c, 0xe18f46];
+var fogColourI = 0;
+var isBgColourChanging = false;
 
 // desktop camera control
 var pitchObject;
@@ -128,8 +133,8 @@ function setupScene() {
 
 function update() {
     if (!isCardboard) {
-        yawObject.rotation.y += (camRotYTarget - yawObject.rotation.y) * 0.04;
-        pitchObject.rotation.x += (camRotXTarget - pitchObject.rotation.x) * 0.04;
+        yawObject.rotation.y += (camRotYTarget - yawObject.rotation.y) * 0.02;
+        pitchObject.rotation.x += (camRotXTarget - pitchObject.rotation.x) * 0.02;
     }
 
     backZ = 999;
@@ -152,6 +157,21 @@ function update() {
         }
     };
 
+    // TODO: change fog colour over time
+    var timeDiff = new Date() - startTime;
+    timeDiff /= 1000;
+    var seconds = Math.round(timeDiff % 60);
+    if (seconds != 0 && seconds % 30 == 0) {
+        if (!isBgColourChanging) {
+            isBgColourChanging = true;
+            if (++fogColourI > COLOURS.length - 1) fogColourI = 0;
+            fogColour = COLOURS[fogColourI];
+        }
+    } else isBgColourChanging = false;
+
+    scene.fog.color.lerp(new THREE.Color(fogColour), 0.005);
+    renderer.setClearColor(scene.fog.color);
+
     stats.update();
 }
 
@@ -165,7 +185,6 @@ function render() {
         renderer.render(scene, camera);
     }
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // GUI setup
@@ -216,7 +235,6 @@ function onMousePress(event) {
 
 function onMouseRelease(event) {
     isMouseDown = false;
-    console.log(speedPresetsI);
     if (++speedPresetsI > speedPresets.length - 1) speedPresetsI = 0;
     speed = speedPresets[speedPresetsI];
 }
