@@ -8,7 +8,7 @@ var Room = window.Room = function(properties) {
     this.properties = properties || this.propertiesDefault;
     var colour = COLOURS[Math.floor(Math.random() * COLOURS.length)];
     var roomMaterial = new THREE.MeshPhongMaterial({color:colour, fog: true, shininess: 80});
-    
+
     // var cubeGeometry = new THREE.BoxGeometry( 100, this.properties.depth, 100, 1, 1, 1 );
     // var cubeMesh = new THREE.Mesh( cubeGeometry );
     // var cubeBSP = new ThreeBSP( cubeMesh );

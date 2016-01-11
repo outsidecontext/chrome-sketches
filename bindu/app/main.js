@@ -235,8 +235,10 @@ function onMousePress(event) {
 
 function onMouseRelease(event) {
     isMouseDown = false;
-    if (++speedPresetsI > speedPresets.length - 1) speedPresetsI = 0;
-    speed = speedPresets[speedPresetsI];
+    if (isCardboard) {
+        if (++speedPresetsI > speedPresets.length - 1) speedPresetsI = 0;
+        speed = speedPresets[speedPresetsI];
+    }
 }
 
 function onKeyPress(event) {}
