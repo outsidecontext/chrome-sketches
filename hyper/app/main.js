@@ -4,9 +4,10 @@
 // Threejs scene and renderer
 var scene, camera, renderer, effect, controls;
 var element, container;
+var isDeviceOriented = false;
 // particles
 var particles = [];
-var particleCount = 2000;
+var particleCount = 1500;
 var isMouseDown = false;
 var radius = 5;
 var maxRadius = 80;
@@ -17,14 +18,18 @@ var acceleration = 0;
 var maxDistance = -200;
 var geometry;
 
+//var stats = new Stats();
+//stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+//document.body.appendChild( stats.dom );
+
 ///////////////////////////////////////////////////////////////////////////////
 // particles
 /////////////////////////////////////////////////////////////////////////////
 function setup() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.01);
+    //scene.fog = new THREE.FogExp2(0x000000, 0.01);
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200);
-    camera.position.z = 50;
+    camera.position.z = 0;
     renderer = new THREE.WebGLRenderer({
         antialias: false
     });
@@ -35,13 +40,15 @@ function setup() {
     container = document.getElementById('holder');
     container.appendChild(renderer.domElement);
 
-
     geometry = new THREE.Geometry();
     var material = new THREE.LineBasicMaterial({
         color: 0xffffff,
         linewidth: 1,
-        fog: true
+        fog: false,
+        vertexColors: THREE.VertexColors
     });
+    material.vertexColors = THREE.VertexColors;
+
     var angleChangePerPt = (Math.PI * 2) / particleCount;
     var angle = Math.PI * 0.5;
     for (var i = 0; i < particleCount; i++) {
@@ -51,28 +58,41 @@ function setup() {
         geometry.vertices.push(p.pos.clone());
         angle += angleChangePerPt;
     };
-    var mesh = new THREE.Line(geometry, material, THREE.LinePieces);
+
+    for (var i = 0; i < geometry.vertices.length; i += 2) {
+        geometry.colors[i] = new THREE.Color(Math.random(), Math.random(), Math.random());
+        geometry.colors[i + 1] = geometry.colors[i];
+    }
+
+    var mesh = new THREE.LineSegments(geometry, material);
     scene.add(mesh);
 
     render();
 }
 
-function setupGui() {
+function setupDesktop() {
     // gui
+    /*
     var gui = new dat.GUI();
     gui.add(this, 'particleCount', 1, 4000);
     gui.add(velocity, 'z', 0.0, 20.0).listen();
     var guiDepth = gui.addFolder("depth");
-    var controls = {
+    var cameraSettings = {
         cameraNear: camera.near,
         cameraFar: camera.far
     }
-    guiDepth.add(controls, 'cameraNear', 0, 50).onChange(function(e) {
+    guiDepth.add(cameraSettings, 'cameraNear', 0, 50).onChange(function(e) {
         camera.near = e;
     });
-    guiDepth.add(controls, 'cameraFar', 0, 50).onChange(function(e) {
+    guiDepth.add(cameraSettings, 'cameraFar', 0, 50).onChange(function(e) {
         camera.far = e;
     });
+    */
+
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.enableZoom = false;
 }
 
 function createParticle(angle) {
@@ -80,7 +100,7 @@ function createParticle(angle) {
     this.radius = radius + (Math.random() * maxRadius);
     var x = this.radius * Math.cos(angle);
     var y = this.radius * Math.sin(angle);
-    var z = Math.random() * -maxDistance;
+    var z = Math.random() * maxDistance;
     this.pos = new THREE.Vector3(x, y, z);
     this.positions = [this.pos.clone()];
     this.update = function() {
@@ -112,7 +132,7 @@ function createParticle(angle) {
 
 function update() {
 
-    if (isMouseDown) acceleration += 0.01; 
+    if (isMouseDown) acceleration += 0.01;
     else acceleration -= 0.008;
     acceleration = clamp(acceleration, 0, 5);
     velocity.z += acceleration;
@@ -135,17 +155,25 @@ function update() {
             p.reset();
         }
         if (geometry) {
-            var vertI = i*2;
+            var vertI = i * 2;
             geometry.vertices[vertI].x = p.positions[0].x;
             geometry.vertices[vertI].y = p.positions[0].y;
             geometry.vertices[vertI].z = p.positions[0].z;
             geometry.vertices[vertI + 1].x = p.positions[1].x;
             geometry.vertices[vertI + 1].y = p.positions[1].y;
             geometry.vertices[vertI + 1].z = p.positions[1].z;
+
+            var grey = map(p.positions[0].z, -200, -0, 0, 1);
+            geometry.colors[ vertI ] = new THREE.Color( grey*0.8, grey*0.8, grey );
+            grey = map(p.positions[1].z, -200, -0, 0, 1);
+            geometry.colors[ vertI + 1 ] = new THREE.Color( grey*0.8, grey*0.8, grey );
         }
     }
-    if (geometry) geometry.verticesNeedUpdate = true;
 
+    if (geometry) {
+        geometry.verticesNeedUpdate = true;
+        geometry.colorsNeedUpdate = true;
+    }
 
     if (particles.length < Math.round(particleCount)) {
         var newCount = Math.round(particleCount) - particles.length;
@@ -176,13 +204,15 @@ function positionParticles() {
 
 function render() {
     requestAnimationFrame(render);
+    //stats.begin();
     update();
-    if (controls) {
-        controls.update();
+    if (controls) controls.update();
+    if (isDeviceOriented) {
         effect.render(scene, camera);
     } else {
         renderer.render(scene, camera);
     }
+    //stats.end();
 }
 
 function onMouseMove(event) {}
@@ -199,14 +229,12 @@ function onMouseRelease(event) {
 
 function onKeyPress(event) {
     // console.log(event.keyCode);
-    if (event.keyCode == '80') isPaused = !isPaused;
-    else if (event.keyCode == '38') camera.position.z -= 0.5;
-    else if (event.keyCode == '40') camera.position.z += 0.5;
 }
 
 function setOrientationControls(e) {
     if (e.alpha) {
         // cardboard
+        isDeviceOriented = true;
         effect = new THREE.StereoEffect(renderer);
         effect.eyeSeparation = 0;
         effect.setSize(window.innerWidth, window.innerHeight);
@@ -216,7 +244,7 @@ function setOrientationControls(e) {
         window.removeEventListener('deviceorientation', setOrientationControls, true);
         //renderer.antialias = false;
     } else {
-        // setupGui();
+        setupDesktop();
     }
 }
 
